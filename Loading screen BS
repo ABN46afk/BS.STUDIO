@@ -1,0 +1,681 @@
+-- =====================================================
+-- BS STUDIO V5
+-- 3D FAKE DEPTH EDITION
+-- TEIL 1/3
+-- LocalScript -> StarterGui
+-- =====================================================
+
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+
+
+-- GUI
+
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = player.PlayerGui
+
+
+
+-- BLUR
+
+local blur = Instance.new("BlurEffect")
+blur.Size = 25
+blur.Parent = Lighting
+
+
+
+-- STATUS
+
+local running = true
+
+
+
+-- BACKGROUND
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1,1)
+bg.BackgroundColor3 = Color3.fromRGB(0,0,0)
+bg.BackgroundTransparency = 0.12
+bg.Parent = gui
+
+
+
+local gradient = Instance.new("UIGradient")
+
+gradient.Color = ColorSequence.new({
+
+	ColorSequenceKeypoint.new(
+		0,
+		Color3.fromRGB(0,0,0)
+	),
+
+	ColorSequenceKeypoint.new(
+		0.5,
+		Color3.fromRGB(50,0,0)
+	),
+
+	ColorSequenceKeypoint.new(
+		1,
+		Color3.fromRGB(0,0,0)
+	)
+
+})
+
+gradient.Rotation = 45
+gradient.Parent = bg
+
+
+
+
+-- =====================================================
+-- 3D LOGO SYSTEM
+-- =====================================================
+
+
+local logoLayers = {}
+
+
+local function createLogoLayer(
+	color,
+	offset,
+	transparency
+)
+
+	local logo = Instance.new("ImageLabel")
+
+	logo.Size = UDim2.fromOffset(
+		260,
+		260
+	)
+
+	logo.AnchorPoint = Vector2.new(
+		0.5,
+		0.5
+	)
+
+
+	logo.Position = UDim2.fromScale(
+		0.5,
+		0.25
+	)
+
+
+	logo.BackgroundTransparency = 1
+
+
+	logo.Image =
+		"rbxassetid://134891041950620"
+
+
+	logo.ImageColor3 = color
+
+
+	logo.ImageTransparency = transparency
+
+
+	logo.Parent = gui
+
+
+
+	table.insert(
+		logoLayers,
+		logo
+	)
+
+
+	return logo
+
+end
+
+
+
+-- HINTERE TIEFE
+
+local shadow =
+createLogoLayer(
+	Color3.fromRGB(0,0,0),
+	Vector2.new(12,12),
+	0.3
+)
+
+
+-- ROTE MITTLERE EBENE
+
+local red =
+createLogoLayer(
+	Color3.fromRGB(255,0,0),
+	Vector2.new(6,6),
+	0.15
+)
+
+
+
+-- HAUPT LOGO
+
+local logo =
+createLogoLayer(
+	Color3.fromRGB(255,255,255),
+	Vector2.new(0,0),
+	0
+)
+
+
+
+-- LAYER POSITION VERSCHIEBEN
+
+shadow.Position =
+	UDim2.new(
+		0.5,
+		12,
+		0.25,
+		12
+	)
+
+
+red.Position =
+	UDim2.new(
+		0.5,
+		6,
+		0.25,
+		6
+	)
+
+
+
+-- LOGO START SCALE
+
+for _,v in pairs(logoLayers) do
+
+	v.Size =
+		UDim2.fromOffset(
+			0,
+			0
+		)
+
+end
+
+
+
+-- LOGO BUILD UP
+
+task.spawn(function()
+
+	for size = 0,260,20 do
+
+		for _,v in pairs(logoLayers) do
+
+			v.Size =
+				UDim2.fromOffset(
+					size,
+					size
+				)
+
+		end
+
+		task.wait(0.03)
+
+	end
+
+end)
+
+
+
+
+-- =====================================================
+-- LOGO GLITCH DEPTH ANIMATION
+-- =====================================================
+
+
+task.spawn(function()
+
+	while running do
+
+
+		local x =
+			math.random(-3,3)
+
+
+		local y =
+			math.random(-3,3)
+
+
+
+		logo.Position =
+			UDim2.new(
+				0.5,
+				x,
+				0.25,
+				y
+			)
+
+
+		red.Position =
+			UDim2.new(
+				0.5,
+				6+x,
+				0.25,
+				6+y
+			)
+
+
+
+		shadow.Position =
+			UDim2.new(
+				0.5,
+				12+x,
+				0.25,
+				12+y
+			)
+
+
+
+		task.wait(0.05)
+
+	end
+
+end)
+
+
+
+task.wait(1)
+-- =====================================================
+-- TEIL 2/3
+-- 3D LETTER DEPTH + IMPACT
+-- =====================================================
+
+
+local function create3DLetter(letter, startX)
+
+	local layers = {}
+
+
+	local function makeLayer(color, offset, transparency)
+
+		local t = Instance.new("TextLabel")
+
+		t.Size = UDim2.fromOffset(900,900)
+
+		t.AnchorPoint = Vector2.new(.5,.5)
+
+		t.Position = UDim2.fromScale(startX,.55)
+
+		t.BackgroundTransparency = 1
+
+		t.Text = letter
+
+		t.Font = Enum.Font.Arcade
+
+		t.TextSize = 750
+
+		t.TextColor3 = color
+
+		t.TextTransparency = transparency
+
+		t.TextStrokeTransparency = 0
+
+		t.Parent = gui
+
+		table.insert(layers,t)
+
+		return t
+	end
+
+
+	local shadow = makeLayer(
+		Color3.fromRGB(0,0,0),
+		12,
+		0.2
+	)
+
+
+	local red = makeLayer(
+		Color3.fromRGB(255,0,0),
+		6,
+		0
+	)
+
+
+	local main = makeLayer(
+		Color3.fromRGB(255,255,255),
+		0,
+		0
+	)
+
+
+	shadow.Position =
+		UDim2.new(startX,12,.55,12)
+
+	red.Position =
+		UDim2.new(startX,6,.55,6)
+
+
+	return layers,main
+
+end
+
+
+
+local BLayers,B =
+	create3DLetter("B",-1.5)
+
+
+local SLayers,S =
+	create3DLetter("S",2.5)
+
+
+
+-- SPEED IMPACT
+
+for _,v in pairs(BLayers) do
+
+	TweenService:Create(
+		v,
+		TweenInfo.new(
+			0.25,
+			Enum.EasingStyle.Exponential
+		),
+		{
+			Position =
+				UDim2.fromScale(.42,.55)
+		}
+	):Play()
+
+end
+
+
+
+for _,v in pairs(SLayers) do
+
+	TweenService:Create(
+		v,
+		TweenInfo.new(
+			0.25,
+			Enum.EasingStyle.Exponential
+		),
+		{
+			Position =
+				UDim2.fromScale(.58,.55)
+		}
+	):Play()
+
+end
+
+
+
+task.wait(.28)
+
+
+
+-- IMPACT FLASH
+
+local flash = Instance.new("Frame")
+
+flash.Size = UDim2.fromScale(1,1)
+
+flash.BackgroundColor3 =
+	Color3.fromRGB(255,255,255)
+
+flash.BackgroundTransparency = 1
+
+flash.Parent = gui
+
+
+
+TweenService:Create(
+	flash,
+	TweenInfo.new(.05),
+	{
+		BackgroundTransparency=.1
+	}
+):Play()
+
+
+task.wait(.05)
+
+
+TweenService:Create(
+	flash,
+	TweenInfo.new(.2),
+	{
+		BackgroundTransparency=1
+	}
+):Play()
+
+
+
+-- SHOCKWAVE
+
+local ring = Instance.new("Frame")
+
+ring.AnchorPoint =
+	Vector2.new(.5,.5)
+
+ring.Position =
+	UDim2.fromScale(.5,.55)
+
+ring.Size =
+	UDim2.fromOffset(20,20)
+
+ring.BackgroundTransparency=1
+
+ring.Parent=gui
+
+
+local circle=Instance.new("UICorner")
+circle.CornerRadius=UDim.new(1,0)
+circle.Parent=ring
+
+
+local stroke=Instance.new("UIStroke")
+stroke.Color=Color3.fromRGB(255,0,0)
+stroke.Thickness=10
+stroke.Parent=ring
+
+
+
+TweenService:Create(
+	ring,
+	TweenInfo.new(.5),
+	{
+		Size=UDim2.fromOffset(1300,1300),
+		Transparency=1
+	}
+):Play()
+
+
+
+-- SCREEN SHAKE
+
+task.spawn(function()
+
+	for i=1,10 do
+
+		gui.Position =
+			UDim2.fromOffset(
+				math.random(-18,18),
+				math.random(-12,12)
+			)
+
+		task.wait(.03)
+
+	end
+
+
+	gui.Position =
+		UDim2.fromOffset(0,0)
+
+end)
+
+
+
+task.wait(.4)
+-- =====================================================
+-- TEIL 3/3
+-- BS STUDIO 3D TEXT
+-- =====================================================
+
+
+-- LETTER ENTFERNEN
+
+for _,v in pairs(BLayers) do
+	v:Destroy()
+end
+
+for _,v in pairs(SLayers) do
+	v:Destroy()
+end
+
+
+
+-- 3D TEXT
+
+local textLayers={}
+
+
+local function textLayer(color,x,y)
+
+	local t=Instance.new("TextLabel")
+
+	t.Size=
+		UDim2.fromOffset(750,180)
+
+	t.AnchorPoint=
+		Vector2.new(.5,.5)
+
+	t.Position=
+		UDim2.fromScale(.5+x,.7+y)
+
+	t.BackgroundTransparency=1
+
+	t.Text="BS STUDIO"
+
+	t.Font=Enum.Font.Arcade
+
+	t.TextSize=120
+
+	t.TextColor3=color
+
+	t.TextStrokeTransparency=0
+
+	t.TextStrokeColor3=
+		Color3.fromRGB(0,0,0)
+
+	t.Parent=gui
+
+	table.insert(textLayers,t)
+
+end
+
+
+
+-- Tiefe
+
+textLayer(
+	Color3.fromRGB(0,0,0),
+	0.02,
+	0.02
+)
+
+textLayer(
+	Color3.fromRGB(255,0,0),
+	0.01,
+	0.01
+)
+
+
+local title=Instance.new("TextLabel")
+
+title.Size=UDim2.fromOffset(750,180)
+
+title.AnchorPoint=Vector2.new(.5,.5)
+
+title.Position=UDim2.fromScale(.5,.7)
+
+title.BackgroundTransparency=1
+
+title.Text="BS STUDIO"
+
+title.Font=Enum.Font.Arcade
+
+title.TextSize=120
+
+title.TextColor3=
+	Color3.fromRGB(255,255,255)
+
+title.TextStrokeTransparency=0
+
+title.TextStrokeColor3=
+	Color3.fromRGB(0,0,0)
+
+title.Parent=gui
+
+
+
+-- GLITCH
+
+local colors={
+	Color3.fromRGB(255,0,0),
+	Color3.fromRGB(255,255,255),
+	Color3.fromRGB(0,0,0)
+}
+
+
+task.spawn(function()
+
+	while running do
+
+		title.TextColor3=
+			colors[math.random(1,3)]
+
+		title.Position=
+			UDim2.fromScale(
+				.5+math.random(-3,3)/1000,
+				.7
+			)
+
+		task.wait(.08)
+
+	end
+
+end)
+
+
+
+-- 5 SEKUNDEN
+
+task.wait(5)
+
+
+running=false
+
+
+
+TweenService:Create(
+	bg,
+	TweenInfo.new(.5),
+	{
+		BackgroundTransparency=1
+	}
+):Play()
+
+
+TweenService:Create(
+	title,
+	TweenInfo.new(.5),
+	{
+		TextTransparency=1
+	}
+):Play()
+
+
+
+task.wait(.6)
+
+blur:Destroy()
+
+gui:Destroy()

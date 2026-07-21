@@ -83,18 +83,18 @@ local ESPColor = Color3.fromRGB(255, 0, 0)
 
 -- ===== WINDOW =====
 local Window = WindUI:CreateWindow({
-    Title = "BS STUDIO",
+    Title = "BSSTUDIO",
     Icon = "target",
     Author = "by BS STUDIO",
     Folder = "AZIC",
     Size = UDim2.fromOffset(620, 550),
     Transparent = true,
-    Theme = "red",
+    Theme = "Dark",
 })
 
 -- Hintergrund
 local function SetBackgroundImage()
-    local bgImage = "https://photos.app.goo.gl/qsCDGZ6vVQVcpLEE8"
+    local bgImage = "https://photos.app.goo.gl/ZASBZ9kmnEJ2q1Qi9"
     local success, result = pcall(function()
         return game:GetService("ContentProvider"):PreloadAsync({bgImage})
     end)

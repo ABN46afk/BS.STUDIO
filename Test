@@ -1,0 +1,1190 @@
+-- =============================================
+-- BS.STUDIO – All-in-One Script Hub
+-- Features: Aimlock, ESP, Player, Visuals, Graphics, Misc, Config
+-- =============================================
+
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Footagesus/WindUI/main/dist/main.lua"))()
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local Lighting = game:GetService("Lighting")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
+local GuiService = game:GetService("GuiService")
+local StarterGui = game:GetService("StarterGui")
+local Teams = game:GetService("Teams")
+local Mouse = LocalPlayer:GetMouse()
+
+-- ===== VARIABLEN =====
+local Aimlock = false
+local FOV = 120
+local TargetPart = "Head"
+local Smoothness = 0.1
+local AimSpeed = 50
+local MaxTargets = 5
+local AimKey = Enum.KeyCode.E
+
+-- ESP
+local ESPEnabled = false
+local TracersEnabled = false
+local BoxESPEnabled = false
+local NameESPEnabled = false
+local HealthESPEnabled = false
+local TeamCheckEnabled = true
+local WallCheckEnabled = true
+local TriggerBotEnabled = false
+local TriggerBotDelay = 0.001
+local PredictionEnabled = false
+local PredictionAmount = 0.165
+local FOVVisible = true
+local ChamsEnabled = false
+local AimAssistEnabled = false
+local AimAssistStrength = 0.3
+local NoRecoilEnabled = false
+local FOVCircleFilled = false
+local SpinbotEnabled = false
+local SpinbotSpeed = 50
+local AntiAimEnabled = false
+local AntiAimPitch = 90
+local AutoFarmEnabled = false
+local AutoCollectEnabled = false
+
+-- Player
+local WalkspeedEnabled = false
+local WalkspeedValue = 16
+local JumpPowerEnabled = false
+local JumpPowerValue = 50
+local NoclipEnabled = false
+local InfiniteJumpEnabled = false
+local GodModeEnabled = false
+local SizeChangerEnabled = false
+local SizeChangerValue = 1
+local WaterWalkEnabled = false
+local KeySpamEnabled = false
+local KeySpamKey = Enum.KeyCode.E
+local KeySpamDelay = 0.1
+
+-- Visuals
+local AimbotFOVColor = Color3.fromRGB(255, 255, 255)
+local NoFogEnabled = false
+local FullBrightEnabled = false
+local BrightnessValue = 1
+local RemoveFogColorEnabled = false
+local AmbientColorValue = Color3.fromRGB(128, 128, 128)
+
+-- Graphics
+local TrailEffectEnabled = false
+local ParticlesEffectEnabled = false
+local GraphicsColor = Color3.fromRGB(0, 255, 255)
+
+-- Misc
+local GhostModeEnabled = false
+local GhostNeonColor = Color3.fromRGB(0, 255, 255)
+local GhostTrailEnabled = false
+local GhostParticlesEnabled = false
+local RainbowBodyEnabled = false
+local RainbowToolEnabled = false
+local SkyEnabled = false
+local CurrentSkyType = "Default"
+local CustomTeamPlayers = {}
+local ServerHopEnabled = false
+
+-- Config
+local ConfigData = {}
+
+-- ESP-Objekte
+local ESPBoxes = {}
+local ESPNames = {}
+local ESPHealth = {}
+local Tracers = {}
+local Chams = {}
+local ESPColor = Color3.fromRGB(255, 0, 0)
+
+-- ===== FENSTER =====
+local Window = WindUI:CreateWindow({
+    Title = "BS.STUDIO",
+    Icon = "cool",
+    Author = "by ABN46afk",
+    Folder = "BSSTUDIO",
+    Size = UDim2.fromOffset(620, 550),
+    Transparent = true,
+    Theme = "Dark",
+})
+
+-- ===== TABS =====
+local AimTab = Window:Tab({Title = "Aimlock", Icon = "crosshair"})
+local ESPTab = Window:Tab({Title = "ESP", Icon = "eye"})
+local PlayerTab = Window:Tab({Title = "Player", Icon = "user"})
+local VisualTab = Window:Tab({Title = "Visuals", Icon = "monitor"})
+local GraphicsTab = Window:Tab({Title = "Graphics", Icon = "✨"})
+local MiscTab = Window:Tab({Title = "Misc", Icon = "🎭"})
+local ConfigTab = Window:Tab({Title = "Config", Icon = "💾"})
+
+-- ===== FOV CIRCLE =====
+local Circle = Drawing.new("Circle")
+Circle.Visible = FOVVisible
+Circle.Color = Color3.fromRGB(255, 255, 255)
+Circle.Thickness = 2
+Circle.NumSides = 100
+Circle.Filled = false
+Circle.Transparency = 1
+Circle.Radius = FOV
+
+RunService.RenderStepped:Connect(function()
+    Circle.Position = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
+    Circle.Radius = FOV
+    Circle.Color = AimbotFOVColor
+    Circle.Visible = FOVVisible
+    Circle.Filled = FOVCircleFilled
+    if FOVCircleFilled then
+        Circle.Transparency = 0.3
+    else
+        Circle.Transparency = 1
+    end
+end)
+
+-- ===== HILFSFUNKTIONEN =====
+local function IsVisible(Target)
+    if not WallCheckEnabled then return true end
+    local Origin = Camera.CFrame.Position
+    local Direction = (Target.Position - Origin).Unit * 5000
+    local Params = RaycastParams.new()
+    Params.FilterType = Enum.RaycastFilterType.Blacklist
+    Params.FilterDescendantsInstances = {LocalPlayer.Character}
+    Params.IgnoreWater = true
+    local Result = workspace:Raycast(Origin, Direction, Params)
+    if Result then
+        return Result.Instance:IsDescendantOf(Target.Parent)
+    end
+    return true
+end
+
+local function IsEnemy(player)
+    if not TeamCheckEnabled then return true end
+    for _, teamPlayer in pairs(CustomTeamPlayers) do
+        if teamPlayer == player then return false end
+    end
+    if LocalPlayer.Team and player.Team then
+        return LocalPlayer.Team ~= player.Team
+    end
+    return true
+end
+
+-- ===== SKY-FUNKTIONEN =====
+local function SetAuroraSky()
+    local sky = Instance.new("Sky")
+    sky.Name = "AuroraSky"
+    sky.SkyboxBk = "rbxassetid://128600713462148"
+    sky.SkyboxDn = "rbxassetid://129205524771926"
+    sky.SkyboxFt = "rbxassetid://91295549823939"
+    sky.SkyboxLf = "rbxassetid://78049621027692"
+    sky.SkyboxRt = "rbxassetid://97339481871314"
+    sky.SkyboxUp = "rbxassetid://85412515491070"
+    sky.MoonTextureId = "rbxassetid://6444320592"
+    sky.SunTextureId = "rbxassetid://6196665106"
+    sky.MoonAngularSize = 11
+    sky.SunAngularSize = 11
+    sky.StarCount = 3000
+    sky.Parent = Lighting
+    CurrentSkyType = "Aurora"
+end
+
+local function ResetSky()
+    for _, v in pairs(Lighting:GetChildren()) do
+        if v:IsA("Sky") then v:Destroy() end
+    end
+    local defaultSky = Instance.new("Sky")
+    defaultSky.Name = "DefaultSky"
+    defaultSky.SkyboxBk = "rbxassetid://6444884337"
+    defaultSky.SkyboxDn = "rbxassetid://6444884337"
+    defaultSky.SkyboxFt = "rbxassetid://6444884337"
+    defaultSky.SkyboxLf = "rbxassetid://6444884337"
+    defaultSky.SkyboxRt = "rbxassetid://6444884337"
+    defaultSky.SkyboxUp = "rbxassetid://6444884337"
+    defaultSky.Parent = Lighting
+    CurrentSkyType = "Default"
+end
+
+-- ===== MULTI-TARGET =====
+local function GetTargets()
+    local Targets = {}
+    for _, Player in pairs(Players:GetPlayers()) do
+        if Player ~= LocalPlayer and Player.Character and Player.Character:FindFirstChild(TargetPart) and Player.Character:FindFirstChild("Humanoid") and Player.Character.Humanoid.Health > 0 and IsEnemy(Player) then
+            local Part = Player.Character[TargetPart]
+            if IsVisible(Part) then
+                local Pos, Visible = Camera:WorldToViewportPoint(Part.Position)
+                if Visible then
+                    local Distance = (Vector2.new(Pos.X, Pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
+                    if Distance <= FOV then
+                        table.insert(Targets, {Part = Part, Distance = Distance, Player = Player})
+                    end
+                end
+            end
+        end
+    end
+    table.sort(Targets, function(a, b) return a.Distance < b.Distance end)
+    return Targets
+end
+
+-- ===== AIM-FUNKTION =====
+local function AimAtTargets(Targets)
+    if #Targets == 0 then return end
+    local avgPos = Vector3.new(0, 0, 0)
+    local count = math.min(#Targets, MaxTargets)
+    local validTargets = 0
+    for i = 1, count do
+        if Targets[i] and Targets[i].Part then
+            avgPos = avgPos + Targets[i].Part.Position
+            validTargets = validTargets + 1
+        end
+    end
+    if validTargets == 0 then return end
+    avgPos = avgPos / validTargets
+
+    if PredictionEnabled then
+        local vel = Vector3.new(0, 0, 0)
+        local velCount = 0
+        for i = 1, count do
+            local root = Targets[i].Part.Parent and Targets[i].Part.Parent:FindFirstChild("HumanoidRootPart")
+            if root then
+                vel = vel + root.Velocity
+                velCount = velCount + 1
+            end
+        end
+        if velCount > 0 then
+            avgPos = avgPos + (vel / velCount) * PredictionAmount
+        end
+    end
+
+    local currentCF = Camera.CFrame
+    local targetCF = CFrame.new(currentCF.Position, avgPos)
+    if AimSpeed > 0 then
+        local relative = currentCF:ToObjectSpace(targetCF)
+        local angles = Vector3.new(
+            math.atan2(-relative.LookVector.Y, relative.LookVector.Z),
+            math.atan2(relative.LookVector.X, relative.LookVector.Z),
+            0
+        )
+        local maxAngle = math.rad(AimSpeed * 0.1)
+        local clampedAngles = Vector3.new(
+            math.clamp(angles.X, -maxAngle, maxAngle),
+            math.clamp(angles.Y, -maxAngle, maxAngle),
+            0
+        )
+        Camera.CFrame = currentCF * CFrame.fromEulerAnglesXYZ(clampedAngles.X, clampedAngles.Y, 0)
+    else
+        Camera.CFrame = targetCF
+    end
+end
+
+-- ===== WEITERE FUNKTIONEN =====
+local lastShot = 0
+local function TriggerBot()
+    if not TriggerBotEnabled then return end
+    local targets = GetTargets()
+    if #targets > 0 and tick() - lastShot > TriggerBotDelay then
+        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        task.wait(0.001)
+        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+        lastShot = tick()
+    end
+end
+
+local function AimAssist()
+    if not AimAssistEnabled then return end
+    local targets = GetTargets()
+    if #targets > 0 then
+        local target = targets[1]
+        local targetPos = target.Part.Position
+        if PredictionEnabled then
+            local humanoidRoot = target.Part.Parent and target.Part.Parent:FindFirstChild("HumanoidRootPart")
+            if humanoidRoot then
+                targetPos = targetPos + (humanoidRoot.Velocity * PredictionAmount)
+            end
+        end
+        local aimVector = (targetPos - Camera.CFrame.Position).Unit
+        local newCFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, Camera.CFrame.Position + aimVector * 10), AimAssistStrength)
+        Camera.CFrame = newCFrame
+    end
+end
+
+local function NoRecoil()
+    if not NoRecoilEnabled then return end
+    local character = LocalPlayer.Character
+    if character then
+        local humanoid = character:FindFirstChild("Humanoid")
+        if humanoid then
+            humanoid.CameraOffset = Vector3.new(0, 0, 0)
+        end
+    end
+end
+
+local spinAngle = 0
+local function Spinbot()
+    if not SpinbotEnabled then return end
+    spinAngle = (spinAngle + SpinbotSpeed) % 360
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.Orientation = Vector3.new(0, spinAngle, 0)
+    end
+end
+
+local function AntiAim()
+    if not AntiAimEnabled then return end
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("HumanoidRootPart") then
+        character.HumanoidRootPart.Orientation = Vector3.new(AntiAimPitch, tick() * 100 % 360, 0)
+    end
+end
+
+-- ===== NOCLIP =====
+local noclipConnection
+local function SetupNoclip()
+    if NoclipEnabled then
+        noclipConnection = RunService.Stepped:Connect(function()
+            local character = LocalPlayer.Character
+            if character then
+                for _, part in pairs(character:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                    end
+                end
+            end
+        end)
+    else
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+    end
+end
+
+-- ===== INFINITE JUMP =====
+local function InfiniteJump()
+    if not InfiniteJumpEnabled then return end
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        local humanoid = character.Humanoid
+        if humanoid:GetState() == Enum.HumanoidStateType.Freefall or humanoid:GetState() == Enum.HumanoidStateType.Jumping then
+            humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end
+
+-- ===== GOD MODE =====
+local function GodMode()
+    if not GodModeEnabled then return end
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid.MaxHealth = math.huge
+        character.Humanoid.Health = math.huge
+        character.Humanoid.BreakJointsOnDeath = false
+    end
+end
+
+-- ===== SIZE CHANGER =====
+local function SizeChanger()
+    if not SizeChangerEnabled then return end
+    local character = LocalPlayer.Character
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Size = part.Size * (SizeChangerValue / (part.Size.X / 1))
+            end
+        end
+    end
+end
+
+-- ===== WATER WALK =====
+local function WaterWalk()
+    if not WaterWalkEnabled then return end
+    local character = LocalPlayer.Character
+    if character and character:FindFirstChild("Humanoid") then
+        character.Humanoid:SetStateEnabled(Enum.HumanoidStateType.Swimming, false)
+    end
+end
+
+-- ===== KEY SPAM =====
+local function KeySpam()
+    if not KeySpamEnabled then return end
+    VirtualInputManager:SendKeyEvent(true, KeySpamKey, false, game)
+    task.wait(KeySpamDelay)
+    VirtualInputManager:SendKeyEvent(false, KeySpamKey, false, game)
+end
+
+-- ===== TELEPORT TO PLAYER =====
+local function TeleportToPlayer(targetName)
+    for _, player in pairs(Players:GetPlayers()) do
+        if string.lower(player.Name) == string.lower(targetName) then
+            local targetChar = player.Character
+            if targetChar and targetChar:FindFirstChild("HumanoidRootPart") then
+                local localChar = LocalPlayer.Character
+                if localChar and localChar:FindFirstChild("HumanoidRootPart") then
+                    localChar.HumanoidRootPart.CFrame = targetChar.HumanoidRootPart.CFrame * CFrame.new(0, 3, 0)
+                    WindUI:Notify({Title = "Teleport", Content = "Teleportiert zu " .. player.Name, Duration = 2})
+                end
+            end
+            return
+        end
+    end
+    WindUI:Notify({Title = "Teleport", Content = "Spieler nicht gefunden!", Duration = 2})
+end
+
+-- ===== GHOST MODE =====
+local ghostConnections = {}
+local ghostParts = {}
+local ghostTrails = {}
+local ghostParticles = {}
+
+local function ApplyGhostMode()
+    if not GhostModeEnabled then
+        for _, part in pairs(ghostParts) do
+            if part and part:IsA("BasePart") then
+                part.Transparency = 0
+                if part:FindFirstChild("GhostGlow") then
+                    part.GhostGlow:Destroy()
+                end
+            end
+        end
+        ghostParts = {}
+        for _, conn in pairs(ghostConnections) do
+            conn:Disconnect()
+        end
+        ghostConnections = {}
+        for _, trail in pairs(ghostTrails) do
+            trail:Destroy()
+        end
+        ghostTrails = {}
+        for _, particle in pairs(ghostParticles) do
+            particle:Destroy()
+        end
+        ghostParticles = {}
+        return
+    end
+
+    local character = LocalPlayer.Character
+    if not character then return end
+
+    for _, part in pairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.Transparency = 0.3
+            local glow = Instance.new("BillboardGui")
+            glow.Name = "GhostGlow"
+            glow.Size = UDim2.new(0, 60, 0, 60)
+            glow.AlwaysOnTop = true
+            glow.StudsOffset = Vector3.new(0, 0, 0)
+            glow.Parent = part
+            local frame = Instance.new("Frame")
+            frame.Size = UDim2.new(1, 0, 1, 0)
+            frame.BackgroundColor3 = GhostNeonColor
+            frame.BackgroundTransparency = 0.2
+            frame.BorderSizePixel = 0
+            frame.Parent = glow
+            local glow2 = Instance.new("Frame")
+            glow2.Size = UDim2.new(1.5, 0, 1.5, 0)
+            glow2.Position = UDim2.new(-0.25, 0, -0.25, 0)
+            glow2.BackgroundColor3 = GhostNeonColor
+            glow2.BackgroundTransparency = 0.5
+            glow2.BorderSizePixel = 0
+            glow2.Parent = glow
+            table.insert(ghostParts, part)
+        end
+    end
+
+    if GhostTrailEnabled then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                local trail = Instance.new("Trail")
+                trail.Name = "GhostTrail"
+                trail.Color = ColorSequence.new(GhostNeonColor)
+                trail.Transparency = NumberSequence.new(0.8)
+                trail.Lifetime = 0.5
+                trail.MinLength = 0.5
+                trail.Texture = "rbxassetid://6444320592"
+                trail.Parent = part
+                table.insert(ghostTrails, trail)
+            end
+        end
+    end
+
+    if GhostParticlesEnabled then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                local particles = Instance.new("ParticleEmitter")
+                particles.Name = "GhostParticles"
+                particles.Color = ColorSequence.new(GhostNeonColor)
+                particles.Size = NumberSequence.new(1)
+                particles.Transparency = NumberSequence.new(0.5)
+                particles.Rate = 20
+                particles.Lifetime = NumberRange.new(0.5, 1)
+                particles.SpreadAngle = Vector2.new(180, 180)
+                particles.VelocityInheritance = 0.5
+                particles.Texture = "rbxassetid://6444320592"
+                particles.Parent = part
+                table.insert(ghostParticles, particles)
+            end
+        end
+    end
+
+    local conn = character.ChildAdded:Connect(function(child)
+        task.wait(0.1)
+        ApplyGhostMode()
+    end)
+    table.insert(ghostConnections, conn)
+end
+
+-- ===== RAINBOW BODY =====
+local function RainbowBody()
+    if not RainbowBodyEnabled then return end
+    local character = LocalPlayer.Character
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.Color = Color3.fromHSV(tick() % 1, 1, 1)
+            end
+        end
+    end
+end
+
+-- ===== RAINBOW TOOL =====
+local function RainbowTool()
+    if not RainbowToolEnabled then return end
+    local character = LocalPlayer.Character
+    if character then
+        for _, tool in pairs(character:GetChildren()) do
+            if tool:IsA("Tool") then
+                for _, part in pairs(tool:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.Color = Color3.fromHSV(tick() % 1, 1, 1)
+                    end
+                end
+            end
+        end
+    end
+end
+
+-- ===== SKIN CHANGER =====
+local function CopySkin(targetUsername)
+    local targetPlayer = nil
+    for _, player in pairs(Players:GetPlayers()) do
+        if string.lower(player.Name) == string.lower(targetUsername) then
+            targetPlayer = player
+            break
+        end
+    end
+    if not targetPlayer then
+        WindUI:Notify({Title = "Skin Changer", Content = "Spieler nicht gefunden!", Duration = 3})
+        return
+    end
+    local targetChar = targetPlayer.Character
+    local localChar = LocalPlayer.Character
+        if not targetChar or not localChar then return end
+
+    for _, child in pairs(localChar:GetChildren()) do
+        if child:IsA("Accessory") or child:IsA("Shirt") or child:IsA("Pants") or child:IsA("ShirtGraphic") then
+            child:Destroy()
+        end
+    end
+
+    for _, child in pairs(targetChar:GetChildren()) do
+        if child:IsA("Accessory") then
+            local newAccessory = child:Clone()
+            newAccessory.Parent = localChar
+            newAccessory.Handle:BreakJoints()
+            task.wait(0.05)
+        end
+    end
+
+    local shirt = targetChar:FindFirstChild("Shirt")
+    local pants = targetChar:FindFirstChild("Pants")
+    local shirtGraphic = targetChar:FindFirstChild("ShirtGraphic")
+    if shirt then shirt:Clone().Parent = localChar end
+    if pants then pants:Clone().Parent = localChar end
+    if shirtGraphic then shirtGraphic:Clone().Parent = localChar end
+
+    WindUI:Notify({Title = "Skin Changer", Content = "Skin von " .. targetUsername .. " kopiert!", Duration = 3})
+end
+
+-- ===== TEAM MANAGER =====
+local function SetTeam(playerName, teamName)
+    for _, player in pairs(Players:GetPlayers()) do
+        if string.lower(player.Name) == string.lower(playerName) then
+            local team = Teams:FindFirstChild(teamName)
+            if team then
+                player.Team = team
+                WindUI:Notify({Title = "Team Manager", Content = player.Name .. " zu " .. teamName .. " verschoben", Duration = 2})
+            else
+                WindUI:Notify({Title = "Team Manager", Content = "Team nicht gefunden!", Duration = 2})
+            end
+            return
+        end
+    end
+    WindUI:Notify({Title = "Team Manager", Content = "Spieler nicht gefunden!", Duration = 2})
+end
+
+-- ===== SERVER HOP =====
+local function ServerHop()
+    if not ServerHopEnabled then return end
+    local servers = {}
+    for _, v in pairs(game:GetService("HttpService"):JSONDecode(game:GetService("HttpService"):GetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100")).data) do
+        if v.playing < v.maxPlayers then
+            table.insert(servers, v.id)
+        end
+    end
+    if #servers > 0 then
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], LocalPlayer)
+    end
+end
+
+-- ===== CONFIG =====
+local function SaveConfig()
+    ConfigData = {
+        Aimlock = Aimlock,
+        FOV = FOV,
+        Smoothness = Smoothness,
+        PredictionEnabled = PredictionEnabled,
+        TargetPart = TargetPart,
+        TriggerBotEnabled = TriggerBotEnabled,
+        AimAssistEnabled = AimAssistEnabled,
+        NoRecoilEnabled = NoRecoilEnabled,
+        SpinbotEnabled = SpinbotEnabled,
+        AntiAimEnabled = AntiAimEnabled,
+        ESPEnabled = ESPEnabled,
+        BoxESPEnabled = BoxESPEnabled,
+        NameESPEnabled = NameESPEnabled,
+        HealthESPEnabled = HealthESPEnabled,
+        TracersEnabled = TracersEnabled,
+        ChamsEnabled = ChamsEnabled,
+        ESPColor = ESPColor,
+        WalkspeedEnabled = WalkspeedEnabled,
+        WalkspeedValue = WalkspeedValue,
+        JumpPowerEnabled = JumpPowerEnabled,
+        JumpPowerValue = JumpPowerValue,
+        NoclipEnabled = NoclipEnabled,
+        InfiniteJumpEnabled = InfiniteJumpEnabled,
+        GodModeEnabled = GodModeEnabled,
+        SizeChangerEnabled = SizeChangerEnabled,
+        SizeChangerValue = SizeChangerValue,
+        WaterWalkEnabled = WaterWalkEnabled,
+        KeySpamEnabled = KeySpamEnabled,
+        NoFogEnabled = NoFogEnabled,
+        FullBrightEnabled = FullBrightEnabled,
+        BrightnessValue = BrightnessValue,
+        RemoveFogColorEnabled = RemoveFogColorEnabled,
+        AmbientColorValue = AmbientColorValue,
+        TrailEffectEnabled = TrailEffectEnabled,
+        ParticlesEffectEnabled = ParticlesEffectEnabled,
+        GraphicsColor = GraphicsColor,
+        GhostModeEnabled = GhostModeEnabled,
+        RainbowBodyEnabled = RainbowBodyEnabled,
+        RainbowToolEnabled = RainbowToolEnabled,
+        SkyEnabled = SkyEnabled,
+        CurrentSkyType = CurrentSkyType,
+    }
+    writefile("BSSTUDIO_Config.json", game:GetService("HttpService"):JSONEncode(ConfigData))
+    WindUI:Notify({Title = "Config", Content = "Konfiguration gespeichert!", Duration = 2})
+end
+
+local function LoadConfig()
+    if isfile("BSSTUDIO_Config.json") then
+        local data = game:GetService("HttpService"):JSONDecode(readfile("BSSTUDIO_Config.json"))
+        for k, v in pairs(data) do
+            ConfigData[k] = v
+        end
+        -- Werte zuweisen
+        Aimlock = ConfigData.Aimlock or false
+        FOV = ConfigData.FOV or 120
+        Smoothness = ConfigData.Smoothness or 0.1
+        PredictionEnabled = ConfigData.PredictionEnabled or false
+        TargetPart = ConfigData.TargetPart or "Head"
+        TriggerBotEnabled = ConfigData.TriggerBotEnabled or false
+        AimAssistEnabled = ConfigData.AimAssistEnabled or false
+        NoRecoilEnabled = ConfigData.NoRecoilEnabled or false
+        SpinbotEnabled = ConfigData.SpinbotEnabled or false
+        AntiAimEnabled = ConfigData.AntiAimEnabled or false
+        ESPEnabled = ConfigData.ESPEnabled or false
+        BoxESPEnabled = ConfigData.BoxESPEnabled or false
+        NameESPEnabled = ConfigData.NameESPEnabled or false
+        HealthESPEnabled = ConfigData.HealthESPEnabled or false
+        TracersEnabled = ConfigData.TracersEnabled or false
+        ChamsEnabled = ConfigData.ChamsEnabled or false
+        ESPColor = ConfigData.ESPColor or Color3.fromRGB(255, 0, 0)
+        WalkspeedEnabled = ConfigData.WalkspeedEnabled or false
+        WalkspeedValue = ConfigData.WalkspeedValue or 16
+        JumpPowerEnabled = ConfigData.JumpPowerEnabled or false
+        JumpPowerValue = ConfigData.JumpPowerValue or 50
+        NoclipEnabled = ConfigData.NoclipEnabled or false
+        InfiniteJumpEnabled = ConfigData.InfiniteJumpEnabled or false
+        GodModeEnabled = ConfigData.GodModeEnabled or false
+        SizeChangerEnabled = ConfigData.SizeChangerEnabled or false
+        SizeChangerValue = ConfigData.SizeChangerValue or 1
+        WaterWalkEnabled = ConfigData.WaterWalkEnabled or false
+        KeySpamEnabled = ConfigData.KeySpamEnabled or false
+        NoFogEnabled = ConfigData.NoFogEnabled or false
+        FullBrightEnabled = ConfigData.FullBrightEnabled or false
+        BrightnessValue = ConfigData.BrightnessValue or 1
+        RemoveFogColorEnabled = ConfigData.RemoveFogColorEnabled or false
+        AmbientColorValue = ConfigData.AmbientColorValue or Color3.fromRGB(128, 128, 128)
+        TrailEffectEnabled = ConfigData.TrailEffectEnabled or false
+        ParticlesEffectEnabled = ConfigData.ParticlesEffectEnabled or false
+        GraphicsColor = ConfigData.GraphicsColor or Color3.fromRGB(0, 255, 255)
+        GhostModeEnabled = ConfigData.GhostModeEnabled or false
+        RainbowBodyEnabled = ConfigData.RainbowBodyEnabled or false
+        RainbowToolEnabled = ConfigData.RainbowToolEnabled or false
+        SkyEnabled = ConfigData.SkyEnabled or false
+        CurrentSkyType = ConfigData.CurrentSkyType or "Default"
+        SetupNoclip()
+        ApplyGhostMode()
+        WindUI:Notify({Title = "Config", Content = "Konfiguration geladen!", Duration = 2})
+    else
+        WindUI:Notify({Title = "Config", Content = "Keine gespeicherte Konfiguration gefunden!", Duration = 2})
+    end
+end
+
+local function ResetAllSettings()
+    -- Alle Einstellungen zurücksetzen
+    Aimlock = false
+    FOV = 120
+    Smoothness = 0.1
+    PredictionEnabled = false
+    TargetPart = "Head"
+    TriggerBotEnabled = false
+    AimAssistEnabled = false
+    NoRecoilEnabled = false
+    SpinbotEnabled = false
+    AntiAimEnabled = false
+    ESPEnabled = false
+    BoxESPEnabled = false
+    NameESPEnabled = false
+    HealthESPEnabled = false
+    TracersEnabled = false
+    ChamsEnabled = false
+    ESPColor = Color3.fromRGB(255, 0, 0)
+    WalkspeedEnabled = false
+    WalkspeedValue = 16
+    JumpPowerEnabled = false
+    JumpPowerValue = 50
+    NoclipEnabled = false
+    InfiniteJumpEnabled = false
+    GodModeEnabled = false
+    SizeChangerEnabled = false
+    SizeChangerValue = 1
+    WaterWalkEnabled = false
+    KeySpamEnabled = false
+    NoFogEnabled = false
+    FullBrightEnabled = false
+    BrightnessValue = 1
+    RemoveFogColorEnabled = false
+    AmbientColorValue = Color3.fromRGB(128, 128, 128)
+    TrailEffectEnabled = false
+    ParticlesEffectEnabled = false
+    GraphicsColor = Color3.fromRGB(0, 255, 255)
+    GhostModeEnabled = false
+    RainbowBodyEnabled = false
+    RainbowToolEnabled = false
+    SkyEnabled = false
+    CurrentSkyType = "Default"
+    SetupNoclip()
+    ApplyGhostMode()
+    CleanupESP()
+    WindUI:Notify({Title = "Config", Content = "Alle Einstellungen zurückgesetzt!", Duration = 2})
+end
+
+-- ===== RENDER-LOOP =====
+RunService.RenderStepped:Connect(function()
+    if Aimlock then
+        local Targets = GetTargets()
+        if #Targets > 0 then
+            AimAtTargets(Targets)
+        end
+    end
+    TriggerBot()
+    AimAssist()
+    NoRecoil()
+    Spinbot()
+    AntiAim()
+    GodMode()
+    SizeChanger()
+    WaterWalk()
+    if KeySpamEnabled then KeySpam() end
+    if RainbowBodyEnabled then RainbowBody() end
+    if RainbowToolEnabled then RainbowTool() end
+end)
+
+-- ===== WALKSPEED & JUMP POWER =====
+local walkspeedConnection
+local jumppowerConnection
+
+local function UpdateWalkspeed()
+    if WalkspeedEnabled then
+        local character = LocalPlayer.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid.WalkSpeed = WalkspeedValue
+        end
+        if not walkspeedConnection then
+            walkspeedConnection = RunService.RenderStepped:Connect(function()
+                local char = LocalPlayer.Character
+                if char and char:FindFirstChild("Humanoid") then
+                    char.Humanoid.WalkSpeed = WalkspeedValue
+                end
+            end)
+        end
+    else
+        if walkspeedConnection then
+            walkspeedConnection:Disconnect()
+            walkspeedConnection = nil
+        end
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = 16
+        end
+    end
+end
+
+local function UpdateJumpPower()
+    if JumpPowerEnabled then
+        local character = LocalPlayer.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid.JumpPower = JumpPowerValue
+        end
+        if not jumppowerConnection then
+            jumppowerConnection = RunService.RenderStepped:Connect(function()
+                local char = LocalPlayer.Character
+                if char and char:FindFirstChild("Humanoid") then
+                    char.Humanoid.JumpPower = JumpPowerValue
+                end
+            end)
+        end
+    else
+        if jumppowerConnection then
+            jumppowerConnection:Disconnect()
+            jumppowerConnection = nil
+        end
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = 50
+        end
+    end
+end
+
+-- ===== ESP-FUNKTIONEN =====
+local function CreateESPBox(player)
+    local box = Drawing.new("Square")
+    box.Visible = false
+    box.Color = ESPColor
+    box.Thickness = 2
+    box.Filled = false
+    return box
+end
+
+local function CreateESPName(player)
+    local text = Drawing.new("Text")
+    text.Visible = false
+    text.Color = Color3.new(1, 1, 1)
+    text.Size = 14
+    text.Center = true
+    text.Outline = true
+    text.Text = player.Name
+    return text
+end
+
+local function CreateESPHealth(player)
+    local text = Drawing.new("Text")
+    text.Visible = false
+    text.Color = Color3.new(0, 1, 0)
+    text.Size = 12
+    text.Center = true
+    text.Outline = true
+    return text
+end
+
+local function CreateTracer(player)
+    local line = Drawing.new("Line")
+    line.Visible = false
+    line.Color = ESPColor
+    line.Thickness = 1
+    return line
+end
+
+local function CreateChams(player)
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ESPChams"
+    highlight.FillColor = ESPColor
+    highlight.FillTransparency = 0.5
+    highlight.OutlineColor = Color3.new(1, 1, 1)
+    highlight.OutlineTransparency = 0
+    highlight.Parent = player.Character
+    return highlight
+end
+
+local function UpdateESP()
+    for player, box in pairs(ESPBoxes) do box.Visible = false end
+    for player, name in pairs(ESPNames) do name.Visible = false end
+    for player, health in pairs(ESPHealth) do health.Visible = false end
+    for player, tracer in pairs(Tracers) do tracer.Visible = false end
+
+    if not ESPEnabled and not TracersEnabled then return end
+
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 and IsEnemy(player) then
+            local root = player.Character.HumanoidRootPart
+            local humanoid = player.Character.Humanoid
+            local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+
+            if onScreen then
+                if ESPEnabled and BoxESPEnabled then
+                    local box = ESPBoxes[player]
+                    if not box then box = CreateESPBox(player); ESPBoxes[player] = box end
+                    local size = Vector2.new(2000 / pos.Z, 3000 / pos.Z)
+                    box.Size = size
+                    box.Position = Vector2.new(pos.X - size.X/2, pos.Y - size.Y/2)
+                    box.Visible = true
+                    box.Color = ESPColor
+                end
+
+                if ESPEnabled and NameESPEnabled then
+                    local name = ESPNames[player]
+                    if not name then name = CreateESPName(player); ESPNames[player] = name end
+                    name.Position = Vector2.new(pos.X, pos.Y - 40)
+                    name.Visible = true
+                end
+
+                if ESPEnabled and HealthESPEnabled then
+                    local healthText = ESPHealth[player]
+                    if not healthText then healthText = CreateESPHealth(player); ESPHealth[player] = healthText end
+                    healthText.Text = math.floor(humanoid.Health) .. "/" .. math.floor(humanoid.MaxHealth)
+                    healthText.Position = Vector2.new(pos.X, pos.Y - 25)
+                    local healthPercent = humanoid.Health / humanoid.MaxHealth
+                    healthText.Color = Color3.new(1 - healthPercent, healthPercent, 0)
+                    healthText.Visible = true
+                end
+
+                if TracersEnabled then
+                    local tracer = Tracers[player]
+                    if not tracer then tracer = CreateTracer(player); Tracers[player] = tracer end
+                    tracer.From = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+                    tracer.To = Vector2.new(pos.X, pos.Y)
+                    tracer.Visible = true
+                    tracer.Color = ESPColor
+                end
+
+                if ChamsEnabled then
+                    local cham = Chams[player]
+                    if not cham then cham = CreateChams(player); Chams[player] = cham end
+                    cham.Enabled = true
+                    cham.FillColor = ESPColor
+                end
+            else
+                if ESPBoxes[player] then ESPBoxes[player].Visible = false end
+                if ESPNames[player] then ESPNames[player].Visible = false end
+                if ESPHealth[player] then ESPHealth[player].Visible = false end
+                if Tracers[player] then Tracers[player].Visible = false end
+                if Chams[player] then Chams[player].Enabled = false end
+            end
+        else
+            if ESPBoxes[player] then ESPBoxes[player].Visible = false end
+            if ESPNames[player] then ESPNames[player].Visible = false end
+            if ESPHealth[player] then ESPHealth[player].Visible = false end
+            if Tracers[player] then Tracers[player].Visible = false end
+            if Chams[player] then Chams[player]:Destroy(); Chams[player] = nil end
+        end
+    end
+end
+
+-- ===== VISUALS =====
+local function ApplyVisuals()
+    if NoFogEnabled then
+        Lighting.FogEnd = 100000
+    else
+        Lighting.FogEnd = 100000
+    end
+
+    if FullBrightEnabled then
+        Lighting.Brightness = 10
+        Lighting.ClockTime = 12
+    else
+        Lighting.Brightness = BrightnessValue
+    end
+
+    if RemoveFogColorEnabled then
+        Lighting.FogColor = Color3.new(0, 0, 0)
+    end
+
+    Lighting.Ambient = AmbientColorValue
+end
+
+-- ===== GRAPHICS =====
+local function ApplyGraphics()
+    if TrailEffectEnabled then
+        GhostTrailEnabled = true
+    else
+        GhostTrailEnabled = false
+    end
+
+    if ParticlesEffectEnabled then
+        GhostParticlesEnabled = true
+    else
+        GhostParticlesEnabled = false
+    end
+    ApplyGhostMode()
+end
+
+-- ===== CLEANUP =====
+local function CleanupESP()
+    for _, box in pairs(ESPBoxes) do box:Remove() end
+    for _, name in pairs(ESPNames) do name:Remove() end
+    for _, health in pairs(ESPHealth) do health:Remove() end
+    for _, tracer in pairs(Tracers) do tracer:Remove() end
+    for _, cham in pairs(Chams) do cham:Destroy() end
+    ESPBoxes = {}
+    ESPNames = {}
+    ESPHealth = {}
+    Tracers = {}
+    Chams = {}
+end
+
+Players.PlayerRemoving:Connect(function(player)
+    if ESPBoxes[player] then ESPBoxes[player]:Remove(); ESPBoxes[player] = nil end
+    if ESPNames[player] then ESPNames[player]:Remove(); ESPNames[player] = nil end
+    if ESPHealth[player] then ESPHealth[player]:Remove(); ESPHealth[player] = nil end
+    if Tracers[player] then Tracers[player]:Remove(); Tracers[player] = nil end
+    if Chams[player] then Chams[player]:Destroy(); Chams[player] = nil end
+end)
+
+-- ===== INPUT =====
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == AimKey then
+        Aimlock = not Aimlock
+        WindUI:Notify({Title = "Aimlock", Content = "Aimlock " .. (Aimlock and "Enabled" or "Disabled"), Duration = 2})
+    end
+    if input.KeyCode == Enum.KeyCode.Insert then
+        Window:Toggle()
+    end
+    if input.KeyCode == Enum.KeyCode.Space and InfiniteJumpEnabled then
+        InfiniteJump()
+    end
+end)
+
+RunService.RenderStepped:Connect(UpdateESP)
+
+-- =============================================
+-- UI ELEMENTE
+-- =============================================
+
+-- ===== AIM TAB =====
+AimTab:Toggle({Title = "Aimlock", Value = false, Callback = function(v) Aimlock = v end})
+AimTab:Slider({Title = "FOV Size", Value = {Min = 10, Max = 500, Default = 120}, Callback = function(v) FOV = v end})
+AimTab:Slider({Title = "Aim Speed (0 = instant)", Value = {Min = 0, Max = 200, Default = 50}, Callback = function(v) AimSpeed = v end})
+AimTab:Slider({Title = "Max Targets", Value = {Min = 1, Max = 20, Default = 5}, Callback = function(v) MaxTargets = v end})
+AimTab:Slider({Title = "Smoothness", Value = {Min = 0, Max = 1, Default = 0.1, Decimals = 2}, Callback = function(v) Smoothness = v end})
+AimTab:Slider({Title = "Prediction Amount", Value = {Min = 0, Max = 0.5, Default = 0.165, Decimals = 3}, Callback = function(v) PredictionAmount = v end})
+AimTab:Dropdown({Title = "Target Part", Values = {"Head", "HumanoidRootPart", "Torso"}, Value = "Head", Callback = function(v) TargetPart = v end})
+AimTab:Keybind({Title = "Aimlock Key", Value = AimKey, Callback = function(v) AimKey = v end})
+AimTab:Toggle({Title = "Show FOV Circle", Value = true, Callback = function(v) FOVVisible = v end})
+AimTab:Toggle({Title = "Filled FOV", Value = false, Callback = function(v) FOVCircleFilled = v end})
+AimTab:Toggle({Title = "Team Check", Value = true, Callback = function(v) TeamCheckEnabled = v end})
+AimTab:Toggle({Title = "Wall Check", Value = true, Callback = function(v) WallCheckEnabled = v end})
+AimTab:Toggle({Title = "Prediction", Value = false, Callback = function(v) PredictionEnabled = v end})
+AimTab:Toggle({Title = "Trigger Bot", Value = false, Callback = function(v) TriggerBotEnabled = v end})
+AimTab:Slider({Title = "Trigger Delay", Value = {Min = 0.001, Max = 0.5, Default = 0.001, Decimals = 3}, Callback = function(v) TriggerBotDelay = v end})
+AimTab:Toggle({Title = "Aim Assist", Value = false, Callback = function(v) AimAssistEnabled = v end})
+AimTab:Slider({Title = "Aim Assist Strength", Value = {Min = 0.1, Max = 1, Default = 0.3, Decimals = 2}, Callback = function(v) AimAssistStrength = v end})
+AimTab:Toggle({Title = "No Recoil", Value = false, Callback = function(v) NoRecoilEnabled = v end})
+AimTab:Toggle({Title = "Spinbot", Value = false, Callback = function(v) SpinbotEnabled = v end})
+AimTab:Slider({Title = "Spinbot Speed", Value = {Min = 10, Max = 500, Default = 50}, Callback = function(v) SpinbotSpeed = v end})
+AimTab:Toggle({Title = "Anti Aim", Value = false, Callback = function(v) AntiAimEnabled = v end})
+AimTab:Slider({Title = "Anti Aim Pitch", Value = {Min = 0, Max = 180, Default = 90}, Callback = function(v) AntiAimPitch = v end})
+AimTab:Toggle({Title = "Rage Aimbot", Value = false, Callback = function(v) 
+    if v then
+        AimSpeed = 200
+        MaxTargets = 10
+        FOV = 360
+        PredictionEnabled = true
+        TriggerBotEnabled = true
+        NoRecoilEnabled = true
+        SpinbotEnabled = true
+        AntiAimEnabled = true
+    end
+end})
+
+-- ===== ESP TAB =====
+ESPTab:Toggle({Title = "Enable ESP", Value = false, Callback = function(v) ESPEnabled = v; if not v then CleanupESP() end end})
+ESPTab:Toggle({Title = "Box ESP", Value = false, Callback = function(v) BoxESPEnabled = v end})
+ESPTab:Toggle({Title = "Name ESP", Value = false, Callback = function(v) NameESPEnabled = v end})
+ESPTab:Toggle({Title = "Health ESP", Value = false, Callback = function(v) HealthESPEnabled = v end})
+ESPTab:Toggle({Title = "Tracers", Value = false, Callback = function(v) TracersEnabled = v end})
+ESPTab:Toggle({Title = "Chams", Value = false, Callback = function(v) ChamsEnabled = v; if not v then for _, cham in pairs(Chams) do cham:Destroy() end; Chams = {} end end})
+ESPTab:Colorpicker({Title = "ESP Color", Value = Color3.fromRGB(255, 0, 0), Callback = function(v) ESPColor = v end})
+
+-- ===== PLAYER TAB =====
+PlayerTab:Toggle({Title = "Walkspeed", Value = false, Callback = function(v) WalkspeedEnabled = v; UpdateWalkspeed() end})
+PlayerTab:Slider({Title = "Walkspeed Value", Value = {Min = 16, Max = 250, Default = 16}, Callback = function(v) WalkspeedValue = v; if WalkspeedEnabled then UpdateWalkspeed() end end})
+PlayerTab:Toggle({Title = "Jump Power", Value = false, Callback = function(v) JumpPowerEnabled = v; UpdateJumpPower() end})
+PlayerTab:Slider({Title = "Jump Power Value", Value = {Min = 50, Max = 500, Default = 50}, Callback = function(v) JumpPowerValue = v; if JumpPowerEnabled then UpdateJumpPower() end end})
+PlayerTab:Toggle({Title = "Noclip", Value = false, Callback = function(v) NoclipEnabled = v; SetupNoclip() end})
+PlayerTab:Toggle({Title = "Infinite Jump", Value = false, Callback = function(v) InfiniteJumpEnabled = v end})
+PlayerTab:Toggle({Title = "God Mode", Value = false, Callback = function(v) GodModeEnabled = v end})
+PlayerTab:Toggle({Title = "Size Changer", Value = false, Callback = function(v) SizeChangerEnabled = v end})
+PlayerTab:Slider({Title = "Size Value", Value = {Min = 0.5, Max = 5, Default = 1, Decimals = 1}, Callback = function(v) SizeChangerValue = v end})
+PlayerTab:Toggle({Title = "Water Walk", Value = false, Callback = function(v) WaterWalkEnabled = v end})
+PlayerTab:Toggle({Title = "Key Spam", Value = false, Callback = function(v) KeySpamEnabled = v end})
+PlayerTab:Keybind({Title = "Key Spam Key", Value = Enum.KeyCode.E, Callback = function(v) KeySpamKey = v end})
+PlayerTab:Slider({Title = "Key Spam Delay", Value = {Min = 0.05, Max = 1, Default = 0.1, Decimals = 2}, Callback = function(v) KeySpamDelay = v end})
+PlayerTab:Textbox({Title = "Teleport to Player", Value = "", Callback = function(v) TeleportToPlayer(v) end})
+
+-- ===== VISUALS TAB =====
+VisualTab:Colorpicker({Title = "FOV Color", Value = Color3.fromRGB(255, 255, 255), Callback = function(v) AimbotFOVColor = v end})
+VisualTab:Toggle({Title = "No Fog", Value = false, Callback = function(v) NoFogEnabled = v; ApplyVisuals() end})
+VisualTab:Toggle({Title = "Full Bright", Value = false, Callback = function(v) FullBrightEnabled = v; ApplyVisuals() end})
+VisualTab:Slider({Title = "Brightness", Value = {Min = 0, Max = 10, Default = 1, Decimals = 1}, Callback = function(v) BrightnessValue = v; ApplyVisuals() end})
+VisualTab:Toggle({Title = "Remove Fog Color", Value = false, Callback = function(v) RemoveFogColorEnabled = v; ApplyVisuals() end})
+VisualTab:Colorpicker({Title = "Ambient Color", Value = Color3.fromRGB(128, 128, 128), Callback = function(v) AmbientColorValue = v; ApplyVisuals() end})
+
+-- ===== GRAPHICS TAB =====
+GraphicsTab:Toggle({Title = "Trail Effect", Value = false, Callback = function(v) TrailEffectEnabled = v; ApplyGraphics() end})
+GraphicsTab:Toggle({Title = "Particles Effect", Value = false, Callback = function(v) ParticlesEffectEnabled = v; ApplyGraphics() end})
+GraphicsTab:Colorpicker({Title = "Graphics Color", Value = Color3.fromRGB(0, 255, 255), Callback = function(v) GraphicsColor = v; GhostNeonColor = v; ApplyGhostMode() end})
+GraphicsTab:Button({Title = "Refresh Graphics", Callback = function() ApplyGraphics(); WindUI:Notify({Title = "Graphics", Content = "Grafiken aktualisiert!", Duration = 2}) end})
+
+-- ===== MISC TAB =====
+MiscTab:Toggle({Title = "Ghost Mode", Value = false, Callback = function(v) GhostModeEnabled = v; ApplyGhostMode() end})
+MiscTab:Colorpicker({Title = "Ghost Color", Value = Color3.fromRGB(0, 255, 255), Callback = function(v) GhostNeonColor = v; ApplyGhostMode() end})
+MiscTab:Toggle({Title = "Rainbow Body", Value = false, Callback = function(v) RainbowBodyEnabled = v end})
+MiscTab:Toggle({Title = "Rainbow Tool", Value = false, Callback = function(v) RainbowToolEnabled = v end})
+MiscTab:Dropdown({Title = "Sky", Values = {"Aurora", "Reset"}, Value = "Default", Callback = function(v)
+    if v == "Aurora" then
+        SetAuroraSky()
+    elseif v == "Reset" then
+        ResetSky()
+    end
+end})
+MiscTab:Textbox({Title = "Skin Changer (Spielername)", Value = "", Callback = function(v) CopySkin(v) end})
+MiscTab:Textbox({Title = "Team Manager (Spielername, Teamname)", Value = "", Callback = function(v)
+    local parts = {}
+    for word in v:gmatch("%S+") do
+        table.insert(parts, word)
+    end
+    if #parts >= 2 then
+        SetTeam(parts[1], parts[2])
+    end
+end})
+MiscTab:Toggle({Title = "Server Hop", Value = false, Callback = function(v) ServerHopEnabled = v; if v then ServerHop() end end})
+
+-- ===== CONFIG TAB =====
+ConfigTab:Button({Title = "Save Config", Callback = SaveConfig})
+ConfigTab:Button({Title = "Load Config", Callback = LoadConfig})
+ConfigTab:Button({Title = "Reset All Settings", Callback = ResetAllSettings})
+
+-- ===== INIT =====
+ApplyVisuals()
+ApplyGraphics()
+UpdateWalkspeed()
+UpdateJumpPower()
+SetupNoclip()
+
+WindUI:Notify({Title = "BS.STUDIO", Content = "Geladen! Drücke INSERT zum Öffnen/Schließen", Duration = 5})

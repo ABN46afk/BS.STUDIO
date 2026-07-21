@@ -499,19 +499,16 @@ end
 
 -- Cleanup Funktion
 local function CleanupGhost()
-    -- Highlight entfernen
     if ghostHighlight then
         ghostHighlight:Destroy()
         ghostHighlight = nil
     end
-    -- Effekte entfernen
     for _, effect in pairs(ghostEffects) do
         if effect and effect:IsA("Instance") then
             effect:Destroy()
         end
     end
     ghostEffects = {}
-    -- Connections entfernen
     for _, conn in pairs(ghostConnections) do
         conn:Disconnect()
     end
@@ -527,7 +524,6 @@ local function ApplyGhostEffect(effectType)
     local hrp = char:FindFirstChild("HumanoidRootPart")
     if not hrp then return end
     
-    -- Highlight (immer aktiv wenn GhostRainbowEnabled)
     if GhostRainbowEnabled then
         local highlight = Instance.new("Highlight")
         highlight.Name = "GhostGlow"
@@ -536,7 +532,6 @@ local function ApplyGhostEffect(effectType)
         highlight.OutlineTransparency = 0
         highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
         
-        -- Rainbow Color Loop
         local t = 0
         local conn = RunService.RenderStepped:Connect(function(dt)
             t = t + dt * 0.2
@@ -548,12 +543,10 @@ local function ApplyGhostEffect(effectType)
         ghostHighlight = highlight
     end
     
-    -- Effekte basierend auf Typ
     if effectType == "None" then
         return
     end
     
-    -- Attachments
     local top = Instance.new("Attachment", hrp)
     top.Position = Vector3.new(0, 1.5, 0)
     table.insert(ghostEffects, top)
@@ -563,7 +556,6 @@ local function ApplyGhostEffect(effectType)
     table.insert(ghostEffects, bottom)
     
     if effectType == "Rainbow" then
-        -- Rainbow Trail + Sparkles
         local trail = Instance.new("Trail", hrp)
         trail.Attachment0 = top
         trail.Attachment1 = bottom
@@ -587,15 +579,14 @@ local function ApplyGhostEffect(effectType)
         sparkles.SparkleColor = Color3.fromRGB(255,255,255)
         table.insert(ghostEffects, sparkles)
         
-        elseif effectType == "RedNeon" then
-        -- Roter Neon Trail + Sparkles
+    elseif effectType == "RedNeon" then
         local trail = Instance.new("Trail", hrp)
         trail.Attachment0 = top
         trail.Attachment1 = bottom
         trail.Lifetime = 1.2
         trail.LightEmission = 1
         trail.FaceCamera = true
-        trail.Color = ColorSequence.new(Color3.fromRGB(255,0,0), Color3.fromRGB(120,0,0))
+                trail.Color = ColorSequence.new(Color3.fromRGB(255,0,0), Color3.fromRGB(120,0,0))
         table.insert(ghostEffects, trail)
         
         local sparkles = Instance.new("Sparkles", hrp)
@@ -603,7 +594,6 @@ local function ApplyGhostEffect(effectType)
         table.insert(ghostEffects, sparkles)
         
     elseif effectType == "GreenBlack" then
-        -- Grün-Schwarzer Trail + Sparkles
         local trail = Instance.new("Trail", hrp)
         trail.Attachment0 = top
         trail.Attachment1 = bottom
@@ -621,7 +611,6 @@ local function ApplyGhostEffect(effectType)
         table.insert(ghostEffects, sparkles)
         
     elseif effectType == "Mythic" then
-        -- Mythic Fire Ice Lightning
         local trail = Instance.new("Trail", hrp)
         trail.Attachment0 = top
         trail.Attachment1 = bottom
@@ -685,7 +674,6 @@ local function onCharacterAdded(char)
     end
 end
 
--- Verbinde mit CharacterAdded
 local charAddedConn = LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
 table.insert(ghostConnections, charAddedConn)
 
@@ -1114,16 +1102,17 @@ AimTab:Button({
             if plr and plr ~= LocalPlayer then
                 local already = false
                 for _, p in pairs(CustomTeamPlayers) do
-                                    if p == plr then
-                    already = true
-                    break
+                    if p == plr then
+                        already = true
+                        break
+                    end
                 end
-            end
-            if not already then
-                table.insert(CustomTeamPlayers, plr)
-                WindUI:Notify({Title = "Team", Content = plr.Name .. " zum Team hinzugefügt!", Duration = 2})
-            else
-                WindUI:Notify({Title = "Team", Content = plr.Name .. " ist bereits im Team!", Duration = 2})
+                if not already then
+                    table.insert(CustomTeamPlayers, plr)
+                    WindUI:Notify({Title = "Team", Content = plr.Name .. " zum Team hinzugefügt!", Duration = 2})
+                                else
+                    WindUI:Notify({Title = "Team", Content = plr.Name .. " ist bereits im Team!", Duration = 2})
+                end
             end
         end
     end

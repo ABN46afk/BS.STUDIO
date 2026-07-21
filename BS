@@ -83,7 +83,7 @@ local ESPColor = Color3.fromRGB(255, 0, 0)
 
 -- ===== WINDOW =====
 local Window = WindUI:CreateWindow({
-    Title = "BS.STUDIO",
+    Title = "BS",
     Icon = "target",
     Author = "by BS STUDIO",
     Folder = "AZIC",

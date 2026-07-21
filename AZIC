@@ -89,7 +89,7 @@ local Window = WindUI:CreateWindow({
     Folder = "AZIC",
     Size = UDim2.fromOffset(620, 550),
     Transparent = true,
-    Theme = "cyan",
+    Theme = "red",
 })
 
 -- Hintergrund

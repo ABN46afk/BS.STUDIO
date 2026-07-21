@@ -1,0 +1,407 @@
+-- =====================================================
+-- BS STUDIO V5
+-- 3D FAKE DEPTH EDITION + SOUND (MAX INTENSITY)
+-- LocalScript -> StarterGui
+-- =====================================================
+-- WICHTIG: Die IDs unten stammen von echten, öffentlichen
+-- Assets im offiziellen Roblox Creator Store (create.roblox.com/store).
+-- Trotzdem: Roblox kann Assets jederzeit sperren -> vor dem
+-- Live-Gang kurz in Studio testen und bei Bedarf ersetzen.
+-- =====================================================
+
+local TweenService = game:GetService("TweenService")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local SoundService = game:GetService("SoundService")
+
+local player = Players.LocalPlayer
+
+
+-- =====================================================
+-- SOUNDS
+-- =====================================================
+
+local function makeSound(id, volume, pitch, looped)
+	local s = Instance.new("Sound")
+	s.SoundId = "rbxassetid://" .. id
+	s.Volume = volume or 1
+	s.PlaybackSpeed = pitch or 1
+	s.Looped = looped or false
+	s.Parent = SoundService
+	return s
+end
+
+-- Buildup / Energie-Aufladung beim Logo-Aufbau ("Charging Sound Effect")
+local sfxBuildup = makeSound(9077531729, 1.5, 0.8, false)
+
+-- Schweres Rumble/Beben während der Glitch-Depth-Loop ("Earthquake Explosion 3 SFX")
+local sfxRumble = makeSound(9114224217, 0.6, 0.75, true)
+
+-- Riesiger Impact wenn B und S aufeinanderprallen ("Explosion Sound Effect [LOUD]")
+local sfxImpact = makeSound(9119701508, 1.5, 0.85, false)
+
+-- Zweiter Layer für den Impact, gestapelt für extra Wucht ("Detonator Explosion Sound Effect")
+local sfxImpact2 = makeSound(9063733190, 1.2, 0.7, false)
+
+-- Dritter Layer: Sub-Bass Punch für richtig fette Tiefe ("Heavy Hit Sound Effect")
+local sfxImpact3 = makeSound(3041191430, 1.3, 0.6, false)
+
+-- Kurzer Glitch-Stutter für den Text-Glitch am Ende ("Glitch Sound Effect")
+local sfxGlitch = makeSound(1588058260, 0.3, 1.3, false)
+
+-- Outro Whoosh beim Ausblenden ("Fire Whoosh 3 SFX")
+local sfxOutro = makeSound(9114444008, 0.7, 0.6, false)
+
+local lastGlitchSound = 0 -- Throttle, damit der Glitch-Sound nicht spammt
+
+
+-- GUI
+
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.ResetOnSpawn = false
+gui.Parent = player.PlayerGui
+
+
+
+-- BLUR
+
+local blur = Instance.new("BlurEffect")
+blur.Size = 40
+blur.Parent = Lighting
+
+
+
+-- STATUS
+
+local running = true
+
+
+
+-- BACKGROUND
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.fromScale(1,1)
+bg.BackgroundColor3 = Color3.fromRGB(0,0,0)
+bg.BackgroundTransparency = 0.12
+bg.Parent = gui
+
+
+
+local gradient = Instance.new("UIGradient")
+
+gradient.Color = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(0,0,0)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(50,0,0)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(0,0,0))
+})
+
+gradient.Rotation = 45
+gradient.Parent = bg
+
+
+
+
+-- =====================================================
+-- 3D LOGO SYSTEM
+-- =====================================================
+
+local logoLayers = {}
+
+local function createLogoLayer(color, offset, transparency)
+	local logo = Instance.new("ImageLabel")
+	logo.Size = UDim2.fromOffset(260,260)
+	logo.AnchorPoint = Vector2.new(0.5,0.5)
+	logo.Position = UDim2.fromScale(0.5,0.25)
+	logo.BackgroundTransparency = 1
+	logo.Image = "rbxassetid://134891041950620"
+	logo.ImageColor3 = color
+	logo.ImageTransparency = transparency
+	logo.Parent = gui
+
+	table.insert(logoLayers, logo)
+	return logo
+end
+
+-- HINTERE TIEFE
+local shadow = createLogoLayer(Color3.fromRGB(0,0,0), Vector2.new(12,12), 0.3)
+
+-- ROTE MITTLERE EBENE
+local red = createLogoLayer(Color3.fromRGB(255,0,0), Vector2.new(6,6), 0.15)
+
+-- HAUPT LOGO
+local logo = createLogoLayer(Color3.fromRGB(255,255,255), Vector2.new(0,0), 0)
+
+-- LAYER POSITION VERSCHIEBEN
+shadow.Position = UDim2.new(0.5,12,0.25,12)
+red.Position = UDim2.new(0.5,6,0.25,6)
+
+-- LOGO START SCALE
+for _,v in pairs(logoLayers) do
+	v.Size = UDim2.fromOffset(0,0)
+end
+
+-- LOGO BUILD UP
+sfxBuildup:Play() -- <== SOUND: Charging beim Hochskalieren
+sfxRumble:Play()  -- <== SOUND: startet den Rumble-Loop im Hintergrund
+
+task.spawn(function()
+	for size = 0,260,20 do
+		for _,v in pairs(logoLayers) do
+			v.Size = UDim2.fromOffset(size,size)
+		end
+		task.wait(0.03)
+	end
+end)
+
+
+-- =====================================================
+-- LOGO GLITCH DEPTH ANIMATION
+-- =====================================================
+
+task.spawn(function()
+	while running do
+		local x = math.random(-3,3)
+		local y = math.random(-3,3)
+
+		logo.Position = UDim2.new(0.5,x,0.25,y)
+		red.Position = UDim2.new(0.5,6+x,0.25,6+y)
+		shadow.Position = UDim2.new(0.5,12+x,0.25,12+y)
+
+		-- Häufigerer, härterer Glitch-Blip (ca. alle ~0.6s)
+		if tick() - lastGlitchSound > 0.6 and math.random(1,4) == 1 then
+			lastGlitchSound = tick()
+			sfxGlitch:Play()
+		end
+
+		task.wait(0.05)
+	end
+end)
+
+
+task.wait(1)
+-- =====================================================
+-- TEIL 2/3
+-- 3D LETTER DEPTH + IMPACT
+-- =====================================================
+
+local function create3DLetter(letter, startX)
+	local layers = {}
+
+	local function makeLayer(color, offset, transparency)
+		local t = Instance.new("TextLabel")
+		t.Size = UDim2.fromOffset(900,900)
+		t.AnchorPoint = Vector2.new(.5,.5)
+		t.Position = UDim2.fromScale(startX,.55)
+		t.BackgroundTransparency = 1
+		t.Text = letter
+		t.Font = Enum.Font.Arcade
+		t.TextSize = 750
+		t.TextColor3 = color
+		t.TextTransparency = transparency
+		t.TextStrokeTransparency = 0
+		t.Parent = gui
+
+		table.insert(layers,t)
+		return t
+	end
+
+	local shadow = makeLayer(Color3.fromRGB(0,0,0), 12, 0.2)
+	local red = makeLayer(Color3.fromRGB(255,0,0), 6, 0)
+	local main = makeLayer(Color3.fromRGB(255,255,255), 0, 0)
+
+	shadow.Position = UDim2.new(startX,12,.55,12)
+	red.Position = UDim2.new(startX,6,.55,6)
+
+	return layers,main
+end
+
+local BLayers,B = create3DLetter("B",-1.5)
+local SLayers,S = create3DLetter("S",2.5)
+
+-- SPEED IMPACT
+for _,v in pairs(BLayers) do
+	TweenService:Create(v, TweenInfo.new(0.25, Enum.EasingStyle.Exponential), {Position = UDim2.fromScale(.42,.55)}):Play()
+end
+
+for _,v in pairs(SLayers) do
+	TweenService:Create(v, TweenInfo.new(0.25, Enum.EasingStyle.Exponential), {Position = UDim2.fromScale(.58,.55)}):Play()
+end
+
+task.wait(.28)
+
+
+-- IMPACT FLASH
+
+sfxImpact:Play()  -- <== SOUND: der große Crash-Impact genau beim Flash
+sfxImpact2:Play() -- <== SOUND: zweiter Layer, gestapelt für extra Wucht
+sfxImpact3:Play() -- <== SOUND: Sub-Bass Punch für die Tiefe
+
+local flash = Instance.new("Frame")
+flash.Size = UDim2.fromScale(1,1)
+flash.BackgroundColor3 = Color3.fromRGB(255,255,255)
+flash.BackgroundTransparency = 1
+flash.Parent = gui
+
+
+-- DOPPEL-STROBE statt einfachem Blitz
+
+TweenService:Create(flash, TweenInfo.new(.03), {BackgroundTransparency=0}):Play()
+task.wait(.03)
+TweenService:Create(flash, TweenInfo.new(.04), {BackgroundTransparency=.4}):Play()
+task.wait(.04)
+TweenService:Create(flash, TweenInfo.new(.02), {BackgroundTransparency=0}):Play()
+task.wait(.02)
+TweenService:Create(flash, TweenInfo.new(.35), {BackgroundTransparency=1}):Play()
+
+
+
+-- SHOCKWAVE (DOPPELTER RING)
+
+local function makeShockwave(delay, thickness, size, color)
+	task.spawn(function()
+		task.wait(delay)
+
+		local ring = Instance.new("Frame")
+		ring.AnchorPoint = Vector2.new(.5,.5)
+		ring.Position = UDim2.fromScale(.5,.55)
+		ring.Size = UDim2.fromOffset(20,20)
+		ring.BackgroundTransparency = 1
+		ring.Parent = gui
+
+		local circle = Instance.new("UICorner")
+		circle.CornerRadius = UDim.new(1,0)
+		circle.Parent = ring
+
+		local stroke = Instance.new("UIStroke")
+		stroke.Color = color
+		stroke.Thickness = thickness
+		stroke.Parent = ring
+
+		TweenService:Create(ring, TweenInfo.new(.6, Enum.EasingStyle.Quad), {
+			Size = UDim2.fromOffset(size,size),
+			Transparency = 1
+		}):Play()
+
+		TweenService:Create(stroke, TweenInfo.new(.6), {Transparency = 1}):Play()
+	end)
+end
+
+makeShockwave(0,    14, 1500, Color3.fromRGB(255,0,0))
+makeShockwave(0.08, 8,  1900, Color3.fromRGB(255,255,255))
+
+
+
+-- SCREEN SHAKE (heftiger + länger, mit Abklingen)
+
+task.spawn(function()
+	local intensity = 35
+
+	for i=1,22 do
+		gui.Position = UDim2.fromOffset(
+			math.random(-intensity,intensity),
+			math.random(-intensity,intensity)
+		)
+
+		intensity = math.max(intensity - 1.6, 2)
+
+		task.wait(.025)
+	end
+
+	gui.Position = UDim2.fromOffset(0,0)
+end)
+
+
+task.wait(.4)
+-- =====================================================
+-- TEIL 3/3
+-- BS STUDIO 3D TEXT
+-- =====================================================
+
+-- LETTER ENTFERNEN
+for _,v in pairs(BLayers) do v:Destroy() end
+for _,v in pairs(SLayers) do v:Destroy() end
+
+
+-- 3D TEXT
+
+local textLayers={}
+
+local function textLayer(color,x,y)
+	local t=Instance.new("TextLabel")
+	t.Size= UDim2.fromOffset(750,180)
+	t.AnchorPoint= Vector2.new(.5,.5)
+	t.Position= UDim2.fromScale(.5+x,.7+y)
+	t.BackgroundTransparency=1
+	t.Text="BS STUDIO"
+	t.Font=Enum.Font.Arcade
+	t.TextSize=120
+	t.TextColor3=color
+	t.TextStrokeTransparency=0
+	t.TextStrokeColor3= Color3.fromRGB(0,0,0)
+	t.Parent=gui
+
+	table.insert(textLayers,t)
+end
+
+-- Tiefe
+textLayer(Color3.fromRGB(0,0,0), 0.02, 0.02)
+textLayer(Color3.fromRGB(255,0,0), 0.01, 0.01)
+
+local title=Instance.new("TextLabel")
+title.Size=UDim2.fromOffset(750,180)
+title.AnchorPoint=Vector2.new(.5,.5)
+title.Position=UDim2.fromScale(.5,.7)
+title.BackgroundTransparency=1
+title.Text="BS STUDIO"
+title.Font=Enum.Font.Arcade
+title.TextSize=120
+title.TextColor3= Color3.fromRGB(255,255,255)
+title.TextStrokeTransparency=0
+title.TextStrokeColor3= Color3.fromRGB(0,0,0)
+title.Parent=gui
+
+
+-- GLITCH
+
+local colors={
+	Color3.fromRGB(255,0,0),
+	Color3.fromRGB(255,255,255),
+	Color3.fromRGB(0,0,0)
+}
+
+task.spawn(function()
+	while running do
+		title.TextColor3= colors[math.random(1,3)]
+		title.Position= UDim2.fromScale(
+			.5+math.random(-8,8)/1000,
+			.7+math.random(-4,4)/1000
+		)
+
+		-- Härterer, häufigerer Glitch-Blip auf den Titel-Flicker (throttled)
+		if tick() - lastGlitchSound > 0.5 and math.random(1,3) == 1 then
+			lastGlitchSound = tick()
+			sfxGlitch:Play()
+		end
+
+		task.wait(.06)
+	end
+end)
+
+
+-- 5 SEKUNDEN
+
+task.wait(5)
+
+running=false
+
+sfxRumble:Stop() -- <== SOUND: Rumble-Loop stoppen
+sfxOutro:Play()  -- <== SOUND: Whoosh beim Ausblenden
+
+TweenService:Create(bg, TweenInfo.new(.5), {BackgroundTransparency=1}):Play()
+TweenService:Create(title, TweenInfo.new(.5), {TextTransparency=1}):Play()
+
+task.wait(.6)
+
+blur:Destroy()
+gui:Destroy()

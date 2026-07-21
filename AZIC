@@ -89,7 +89,7 @@ local Window = WindUI:CreateWindow({
     Folder = "AZIC",
     Size = UDim2.fromOffset(620, 550),
     Transparent = true,
-    Theme = "Dark",
+    Theme = "Red",
 })
 
 -- Hintergrund
@@ -137,7 +137,7 @@ task.spawn(SetBackgroundImage)
 local AimTab = Window:Tab({Title = "Aimlock", Icon = "crosshair"})
 local ESPTab = Window:Tab({Title = "ESP", Icon = "eye"})
 local VisualTab = Window:Tab({Title = "Visuals", Icon = "monitor"})
-local MiscTab = Window:Tab({Title = "Misc", Icon = "Woman Technologist"})
+local MiscTab = Window:Tab({Title = "Misc", Icon = "star"})
 
 -- ===== FOV CIRCLE =====
 local Circle = Drawing.new("Circle")

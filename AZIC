@@ -83,13 +83,13 @@ local ESPColor = Color3.fromRGB(255, 0, 0)
 
 -- ===== WINDOW =====
 local Window = WindUI:CreateWindow({
-    Title = "Azic Hub",
-    Icon = "cool",
-    Author = "by BROS GANG",
+    Title = "BS STUDIO",
+    Icon = "target",
+    Author = "by BS STUDIO",
     Folder = "AZIC",
     Size = UDim2.fromOffset(620, 550),
     Transparent = true,
-    Theme = "Dark",
+    Theme = "cyan",
 })
 
 -- Hintergrund

@@ -26,7 +26,8 @@ local Smoothness = 0.1
 local AimSpeed = 50
 local MaxTargets = 5
 local AimKey = Enum.KeyCode.E
-local SavedAimSpeed = 50 -- für Instant Aim
+local SavedAimSpeed = 50
+local InstantAimEnabled = false
 
 -- ESP Variablen
 local ESPEnabled = false
@@ -61,7 +62,7 @@ local AimbotFOVColor = Color3.fromRGB(255, 255, 255)
 
 -- ===== NEUES GHOST SYSTEM =====
 local GhostRainbowEnabled = false
-local GhostEffectType = "None" -- "Rainbow", "RedNeon", "GreenBlack", "Mythic"
+local GhostEffectType = "None"
 local ghostHighlight = nil
 local ghostEffects = {}
 local ghostConnections = {}
@@ -586,7 +587,7 @@ local function ApplyGhostEffect(effectType)
         trail.Attachment1 = bottom
         trail.Lifetime = 1.2
         trail.LightEmission = 1
-         trail.FaceCamera = true
+                trail.FaceCamera = true
         trail.Color = ColorSequence.new(Color3.fromRGB(255,0,0), Color3.fromRGB(120,0,0))
         table.insert(ghostEffects, trail)
         
@@ -1268,7 +1269,7 @@ VisualTab:Button({Title = "Copy Skin", Callback = function()
     end)
 end})
 
--- MISC TAB
+-- MISC TAB (VOLLSTÄNDIG)
 MiscTab:Dropdown({
     Title = "UI Theme",
     Values = {"Dark", "Light", "Black"},

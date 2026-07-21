@@ -1,0 +1,19 @@
+loadstring([[
+local Lighting = game:GetService("Lighting")
+for _, v in pairs(Lighting:GetChildren()) do if v:IsA("Sky") then v:Destroy() end end
+local sky = Instance.new("Sky")
+sky.SkyboxBk = "rbxassetid://15983968922"
+sky.SkyboxDn = "rbxassetid://15983966825"
+sky.SkyboxFt = "rbxassetid://15983965025"
+sky.SkyboxLf = "rbxassetid://15983967420"
+sky.SkyboxRt = "rbxassetid://15983966246"
+sky.SkyboxUp = "rbxassetid://15983964246"
+sky.MoonTextureId = "rbxasset://sky/moon.jpg"
+sky.SunTextureId = "rbxasset://sky/sun.jpg"
+sky.MoonAngularSize = 11
+sky.SunAngularSize = 11
+sky.StarCount = 3000
+sky.CelestialBodiesShown = 3
+sky.Parent = Lighting
+print("✅ Sky: Aesthetic")
+]])()

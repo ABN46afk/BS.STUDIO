@@ -1,0 +1,12 @@
+-- =============================================
+--  AZIC HUB V5.0 - LOADING SCREEN + MAIN SCRIPT
+-- =============================================
+
+-- TEIL 1: LOADING SCREEN
+local LoadingScreen = loadstring(game:HttpGet("raw.githubusercontent.com/ABN46afk/BS.STUDIO/refs/heads/main/Loading%20screen%202"))()
+
+-- TEIL 2: WARTEN 6 SEKUNDEN
+task.wait(7)
+
+-- TEIL 3: HAUPTSKRIPT
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ABN46afk/BS.STUDIO/refs/heads/main/AZIC", true))()

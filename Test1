@@ -587,7 +587,7 @@ local function ApplyGhostEffect(effectType)
         trail.Attachment1 = bottom
         trail.Lifetime = 1.2
         trail.LightEmission = 1
-                trail.FaceCamera = true
+        trail.FaceCamera = true
         trail.Color = ColorSequence.new(Color3.fromRGB(255,0,0), Color3.fromRGB(120,0,0))
         table.insert(ghostEffects, trail)
         
@@ -1117,7 +1117,6 @@ AimTab:Toggle({Title = "Trigger Bot", Value = false, Callback = function(v) Trig
 AimTab:Slider({Title = "Trigger Delay", Value = {Min = 0.001, Max = 0.5, Default = 0.001, Decimals = 3}, Callback = function(v) TriggerBotDelay = v end})
 AimTab:Toggle({Title = "Aim Assist", Value = false, Callback = function(v) AimAssistEnabled = v end})
 AimTab:Slider({Title = "Aim Assist Strength", Value = {Min = 0.1, Max = 1, Default = 0.3, Decimals = 2}, Callback = function(v) AimAssistStrength = v end})
-AimTab:Toggle({Title = "No Recoil", Value = false, Callback = function(v) NoRecoilEnabled = v end})
 AimTab:Toggle({Title = "Spinbot", Value = false, Callback = function(v) SpinbotEnabled = v end})
 AimTab:Slider({Title = "Spinbot Speed", Value = {Min = 10, Max = 500, Default = 50}, Callback = function(v) SpinbotSpeed = v end})
 AimTab:Toggle({Title = "Anti Aim", Value = false, Callback = function(v) AntiAimEnabled = v end})

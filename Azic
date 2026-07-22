@@ -1,0 +1,374 @@
+Erstelle mir ein komplettes professionelles WindUI Script mit einem modernen Future/Cyber Design.
+
+====================================
+WICHTIG
+====================================
+
+- Benutze die aktuellste WindUI Library.
+- Erstelle ein vollständiges fertiges Script.
+- Keine Fehler im Code.
+- Prüfe Syntax und WindUI-Kompatibilität.
+- Verwende sauberen optimierten Luau-Code.
+- Sende das komplette Script am Ende.
+- Keine Platzhalter.
+- Nichts weglassen.
+- Keine halben Code-Teile.
+
+====================================
+WINDUI ERKLÄRUNG
+====================================
+
+Benutze WindUI als Haupt UI Framework.
+
+Die Struktur soll so aufgebaut sein:
+
+WindUI
+ └── CreateWindow()
+      ├── Tabs
+      │    ├── Sections
+      │    ├── Buttons
+      │    ├── Toggles
+      │    ├── Sliders
+      │    ├── Dropdowns
+      │    ├── Inputs
+      │    └── Color Picker
+      │
+      └── Settings
+
+
+Nutze WindUI richtig:
+
+Window:
+- Erstellt das Hauptfenster.
+
+Tabs:
+- Kategorien der UI.
+
+Sections:
+- Gruppieren Funktionen.
+
+Buttons:
+- Aktionen ausführen.
+
+Toggles:
+- Funktionen aktivieren/deaktivieren.
+
+Slider:
+- Werte verändern.
+
+Dropdown:
+- Auswahl von Presets oder Einstellungen.
+
+Notifications:
+- Status anzeigen.
+
+
+====================================
+UI DESIGN
+====================================
+
+Erstelle eine Premium Future Gaming UI.
+
+Style:
+
+"CybER Blue + Neon Red"
+
+Farben:
+
+Background:
+- Dunkles Schwarz/Blau
+
+Primary:
+- Cyber Blau
+- RGB ungefähr:
+  0,170,255
+
+Accent:
+- Neon Rot
+- RGB ungefähr:
+  255,40,60
+
+Text:
+- Weiß
+
+Design:
+- Glass Look
+- Moderne Animationen
+- Saubere Übergänge
+- Professionelle Icons
+- Premium Hub Feeling
+
+
+====================================
+WINDOW AUFBAU
+====================================
+
+Erstelle diese Tabs:
+
+1. Home
+
+Inhalt:
+- Status
+- Informationen
+- Notifications
+- Übersicht
+
+
+2. Features
+
+Inhalt:
+- Alle Funktionen aus meinem Script
+- Jede Funktion bekommt eigene UI Elemente
+
+
+3. Visuals
+
+Inhalt:
+- Grafik Einstellungen
+- Sky System
+- Background System
+
+
+4. Settings
+
+Inhalt:
+- Theme System
+- Sky Presets
+- UI Einstellungen
+
+
+====================================
+CUSTOM WINDUI THEME
+====================================
+
+Erstelle ein eigenes Theme:
+
+Name:
+"Cyber Red Blue"
+
+
+Eigenschaften:
+
+Background:
+- Schwarz mit dunklem Blau
+
+Accent:
+- Cyber Blau
+
+Buttons:
+- Neon Rot
+
+Text:
+- Weiß
+
+Secondary:
+- Dunkles Cyber Blau
+
+
+Das Custom Theme soll verändern:
+
+- Fenster Hintergrund
+- Tabs
+- Buttons
+- Toggles
+- Slider
+- Dropdowns
+- Text
+- Hover Effekte
+
+
+====================================
+THEME SYSTEM
+====================================
+
+Im Settings Tab:
+
+Erstelle ein Theme Dropdown.
+
+Optionen:
+
+- Dark
+- Light
+- Rose
+- Plant
+- Indigo
+- Sky
+- Violet
+- Amber
+- Cyber Red Blue
+
+
+Funktionen:
+
+- Theme live wechseln.
+- Änderung sofort übernehmen.
+- Notification nach Änderung anzeigen.
+
+
+Falls WindUI eine bestimmte Syntax für Custom Themes benötigt:
+- Verwende die richtige aktuelle Methode.
+- Keine erfundenen Funktionen.
+
+
+====================================
+SKY SYSTEM
+====================================
+
+Erstelle ein komplettes Sky Preset System.
+
+Ort:
+Settings Tab oder Visuals Tab
+
+
+Funktionen:
+
+- Dropdown mit Sky Namen.
+- Beim Auswählen wird der Roblox Sky gewechselt.
+- Alten Sky entfernen.
+- Keine doppelten Sky Instanzen.
+- Wechsel ohne Neustart.
+
+
+Erstelle:
+
+ApplySky(SkyName)
+
+
+Unterstütze:
+
+- SkyboxBk
+- SkyboxDn
+- SkyboxFt
+- SkyboxLf
+- SkyboxRt
+- SkyboxUp
+- MoonTextureId
+- SunTextureId
+- MoonAngularSize
+- SunAngularSize
+- StarCount
+- CelestialBodiesShown
+
+
+Sky Dropdown:
+
+- Default
+- Aurora
+- Moonlight
+- Orange
+- Pink
+- Universe
+- Aesthetic
+- Space
+
+()
+
+Benutze diese SkyPresets:
+
+[MEINE KOMPLETTE SKY PRESETS TABELLE HIER EINFÜGEN]
+
+
+====================================
+BACKGROUND SYSTEM
+====================================
+
+Erstelle ein Hintergrund-System.
+
+Features:
+
+- Background an/aus
+- Transparenz Slider
+- Bild Hintergrund
+
+
+Benutze diese Roblox Image ID:
+
+134891041950620
+
+
+Das Bild soll:
+- In das UI integriert sein.
+- Nicht einfach den kompletten Bildschirm bedecken.
+- Zum Cyber Theme passen.
+
+
+====================================
+SCRIPT INTEGRATION
+====================================
+
+Packe mein komplettes Script in diese WindUI Oberfläche.
+
+Regeln:
+
+- Alle Funktionen müssen über UI steuerbar sein.
+- Jede Funktion bekommt passende Controls.
+- Nutze passende Tabs und Sections.
+- Erhalte die ursprüngliche Funktion.
+
+
+Mein Script:
+
+[getgenv().KnifeConfig = {
+  Enabled = true,
+  HitPart = "Head",
+  FOV = 450
+}
+
+local phem1 = game:GetService("Players")
+local phem2 = game:GetService("Workspace")
+local phem3 = phem1.LocalPlayer
+local phem4 = phem2.CurrentCamera
+local phem5 = require(phem3.PlayerScripts:WaitForChild("Controllers"):WaitForChild("Combat"):WaitForChild("KnifeController"))
+
+local function phem6()
+  local phem7 = nil
+  local phem8 = getgenv().KnifeConfig.FOV
+  local phem9 = phem4.ViewportSize / 2
+  for phem20, phem10 in phem1:GetPlayers() do
+    if phem10 ~= phem3 and phem10.Character and phem10.Character:FindFirstChild("Humanoid") and phem10.Character.Humanoid.Health > 0 then
+      local phem11 = phem10.Character:FindFirstChild(getgenv().KnifeConfig.HitPart)
+      if phem11 then
+        local phem12, phem13 = phem4:WorldToViewportPoint(phem11.Position)
+        if phem13 then
+          local phem14 = (Vector2.new(phem12.X, phem12.Y) - phem9).Magnitude
+          if phem14 < phem8 then
+            phem7 = phem10
+            phem8 = phem14
+          end
+        end
+      end
+    end
+  end
+  return phem7
+end
+
+local phem15 = phem5._GetThrowDirection
+phem5._GetThrowDirection = function(phem16, phem17)
+  if getgenv().KnifeConfig.Enabled then
+    local phem18 = phem6()
+    if phem18 and phem18.Character then
+      local phem19 = phem18.Character:FindFirstChild(getgenv().KnifeConfig.HitPart)
+      if phem19 then
+        return (phem19.Position - phem17.Position).Unit
+      end
+    end
+  end
+  return phem15(phem16, phem17)
+end]
+
+
+====================================
+EXTRA QUALITÄT
+====================================
+
+Füge hinzu:
+
+- Notifications
+- Animationen
+- Mobile Unterstützung
+- Performance Optimierung
+- Fehlerbehandlung
+- Saubere Variablennamen
+- Professionelle Struktur
+
+Das Ergebnis soll aussehen wie eine hochwertige Cyber Gaming Premium UI.

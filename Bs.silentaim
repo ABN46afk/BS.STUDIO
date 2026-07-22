@@ -1,0 +1,735 @@
+-- ============================================
+-- WINDUI SCRIPT - CYBER RED BLUE THEME
+-- ERWEITERT MIT SILENT AIM & ESP
+-- ============================================
+
+-- Lade WindUI (ersetze den Link mit der aktuellen WindUI Version)
+local WindUI = loadstring(game:HttpGet("https://raw.githubusercontent.com/wind-ui/WindUI/main/WindUI.lua"))() -- Platzhalter
+
+-- ============================================
+-- SKY PRESETS
+-- ============================================
+local SkyPresets = {
+    Default = {
+        SkyboxBk = "rbxassetid://6444884337",
+        SkyboxDn = "rbxassetid://6444884337",
+        SkyboxFt = "rbxassetid://6444884337",
+        SkyboxLf = "rbxassetid://6444884337",
+        SkyboxRt = "rbxassetid://6444884337",
+        SkyboxUp = "rbxassetid://6444884337",
+        MoonTextureId = "rbxassetid://6444320592",
+        SunTextureId = "rbxassetid://6196665106",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+    },
+    Aurora = {
+        SkyboxBk = "rbxassetid://128600713462148",
+        SkyboxDn = "rbxassetid://129205524771926",
+        SkyboxFt = "rbxassetid://91295549823939",
+        SkyboxLf = "rbxassetid://78049621027692",
+        SkyboxRt = "rbxassetid://97339481871314",
+        SkyboxUp = "rbxassetid://85412515491070",
+        MoonTextureId = "rbxassetid://6444320592",
+        SunTextureId = "rbxassetid://6196665106",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+    },
+    Moonlight = {
+        SkyboxBk = "rbxassetid://116261899350523",
+        SkyboxDn = "rbxassetid://92257816837512",
+        SkyboxFt = "rbxassetid://108326981730305",
+        SkyboxLf = "rbxassetid://131834280163741",
+        SkyboxRt = "rbxassetid://99525277797873",
+        SkyboxUp = "rbxassetid://125425274451894",
+        MoonTextureId = "rbxassetid://6444320592",
+        SunTextureId = "rbxassetid://6196665106",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+        CelestialBodiesShown = 3,
+    },
+    Orange = {
+        SkyboxBk = "rbxassetid://75806894209584",
+        SkyboxDn = "rbxassetid://88955070832523",
+        SkyboxFt = "rbxassetid://137588397191887",
+        SkyboxLf = "rbxassetid://124955584991258",
+        SkyboxRt = "rbxassetid://140343245463200",
+        SkyboxUp = "rbxassetid://134383800716949",
+        MoonTextureId = "rbxassetid://6444320592",
+        SunTextureId = "rbxassetid://6196665106",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+        CelestialBodiesShown = 3,
+    },
+    Pink = {
+        SkyboxBk = "rbxassetid://12635309703",
+        SkyboxDn = "rbxassetid://12635311686",
+        SkyboxFt = "rbxassetid://12635312870",
+        SkyboxLf = "rbxassetid://12635313718",
+        SkyboxRt = "rbxassetid://12635315817",
+        SkyboxUp = "rbxassetid://12635316856",
+        MoonTextureId = "rbxassetid://1345054856",
+        SunTextureId = "rbxasset://sky/sun.jpg",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+        CelestialBodiesShown = 3,
+    },
+    Universe = {
+        SkyboxBk = "rbxassetid://600830446",
+        SkyboxDn = "rbxassetid://600831635",
+        SkyboxFt = "rbxassetid://600832720",
+        SkyboxLf = "rbxassetid://600886090",
+        SkyboxRt = "rbxassetid://600833862",
+        SkyboxUp = "rbxassetid://600835177",
+        MoonTextureId = "rbxasset://sky/moon.jpg",
+        SunTextureId = "rbxasset://sky/sun.jpg",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+        CelestialBodiesShown = 3,
+    },
+    Aesthetic = {
+        SkyboxBk = "rbxassetid://15983968922",
+        SkyboxDn = "rbxassetid://15983966825",
+        SkyboxFt = "rbxassetid://15983965025",
+        SkyboxLf = "rbxassetid://15983967420",
+        SkyboxRt = "rbxassetid://15983966246",
+        SkyboxUp = "rbxassetid://15983964246",
+        MoonTextureId = "rbxasset://sky/moon.jpg",
+        SunTextureId = "rbxasset://sky/sun.jpg",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+        CelestialBodiesShown = 3,
+    },
+    Space = {
+        SkyboxBk = "http://www.roblox.com/asset/?id=166509999",
+        SkyboxDn = "http://www.roblox.com/asset/?id=166510057",
+        SkyboxFt = "http://www.roblox.com/asset/?id=166510116",
+        SkyboxLf = "http://www.roblox.com/asset/?id=166510092",
+        SkyboxRt = "http://www.roblox.com/asset/?id=166510131",
+        SkyboxUp = "http://www.roblox.com/asset/?id=166510114",
+        MoonTextureId = "rbxasset://sky/moon.jpg",
+        SunTextureId = "rbxasset://sky/sun.jpg",
+        MoonAngularSize = 11,
+        SunAngularSize = 11,
+        StarCount = 3000,
+        CelestialBodiesShown = 3,
+    },
+}
+
+-- ============================================
+-- CUSTOM THEME "CYBER RED BLUE"
+-- ============================================
+local CyberRedBlueTheme = {
+    Name = "Cyber Red Blue",
+    Background = Color3.fromRGB(10, 10, 30),
+    Accent = Color3.fromRGB(0, 170, 255),
+    Button = Color3.fromRGB(255, 40, 60),
+    Text = Color3.fromRGB(255, 255, 255),
+    Secondary = Color3.fromRGB(0, 50, 80),
+}
+
+-- ============================================
+-- KONFIGURATIONEN
+-- ============================================
+-- Knife Config (bestehend)
+getgenv().KnifeConfig = getgenv().KnifeConfig or {
+    Enabled = true,
+    HitPart = "Head",
+    FOV = 450
+}
+
+-- Silent Aim Config
+getgenv().SilentAimConfig = {
+    Enabled = false,
+    FOV = 150,
+    HitPart = "Head",
+    ShowFOVCircle = true,
+}
+
+-- ESP Config
+getgenv().ESPConfig = {
+    Enabled = false,
+    Boxes = true,
+    NameTags = true,
+    HealthBar = false,
+    Chams = true,
+    ChamsColor = Color3.fromRGB(0, 255, 0),
+}
+
+-- ============================================
+-- KNIFE SCRIPT (bestehend)
+-- ============================================
+local function setupKnifeScript()
+    local Players = game:GetService("Players")
+    local Workspace = game:GetService("Workspace")
+    local LocalPlayer = Players.LocalPlayer
+    local Camera = Workspace.CurrentCamera
+    local KnifeController = require(LocalPlayer.PlayerScripts:WaitForChild("Controllers"):WaitForChild("Combat"):WaitForChild("KnifeController"))
+
+    local function getClosestPlayer()
+        local closest = nil
+        local bestFOV = getgenv().KnifeConfig.FOV
+        local viewportCenter = Camera.ViewportSize / 2
+
+        for _, player in Players:GetPlayers() do
+            if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+                local targetPart = player.Character:FindFirstChild(getgenv().KnifeConfig.HitPart)
+                if targetPart then
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(targetPart.Position)
+                    if onScreen then
+                        local distance = (Vector2.new(screenPos.X, screenPos.Y) - viewportCenter).Magnitude
+                        if distance < bestFOV then
+                            closest = player
+                            bestFOV = distance
+                        end
+                    end
+                end
+            end
+        end
+        return closest
+    end
+
+    local originalGetThrowDirection = KnifeController._GetThrowDirection
+    KnifeController._GetThrowDirection = function(self, character)
+        if getgenv().KnifeConfig.Enabled then
+            local target = getClosestPlayer()
+            if target and target.Character then
+                local targetPart = target.Character:FindFirstChild(getgenv().KnifeConfig.HitPart)
+                if targetPart then
+                    return (targetPart.Position - character.Position).Unit
+                end
+            end
+        end
+        return originalGetThrowDirection(self, character)
+    end
+end
+
+pcall(setupKnifeScript)
+
+-- ============================================
+-- SILENT AIM LOGIK (für Schusswaffen)
+-- ============================================
+local function setupSilentAim()
+    local Players = game:GetService("Players")
+    local Workspace = game:GetService("Workspace")
+    local LocalPlayer = Players.LocalPlayer
+    local Camera = Workspace.CurrentCamera
+    local UserInputService = game:GetService("UserInputService")
+    local RunService = game:GetService("RunService")
+
+    -- FOV Circle Drawing
+    local fovCircle = nil
+    local function updateFOVCircle()
+        if fovCircle then fovCircle:Remove() fovCircle = nil end
+        if not getgenv().SilentAimConfig.Enabled or not getgenv().SilentAimConfig.ShowFOVCircle then return end
+        fovCircle = Drawing.new("Circle")
+        fovCircle.Thickness = 1
+        fovCircle.Color = Color3.fromRGB(0, 170, 255)
+        fovCircle.Filled = false
+        fovCircle.NumSides = 64
+        fovCircle.Radius = getgenv().SilentAimConfig.FOV
+        fovCircle.Visible = true
+        fovCircle.Position = Camera.ViewportSize / 2
+    end
+
+    -- Aktualisiere FOV Circle bei Änderungen
+    local function onConfigChanged()
+        updateFOVCircle()
+    end
+
+    -- Hook für Mausklick (Silent Aim)
+    local function onInputBegan(input, gameProcessed)
+        if gameProcessed then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            if not getgenv().SilentAimConfig.Enabled then return end
+            -- Suche nächsten Spieler im FOV
+            local closestPlayer = nil
+            local bestDist = getgenv().SilentAimConfig.FOV
+            local viewportCenter = Camera.ViewportSize / 2
+            for _, player in Players:GetPlayers() do
+                if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+                    local targetPart = player.Character:FindFirstChild(getgenv().SilentAimConfig.HitPart)
+                    if targetPart then
+                        local screenPos, onScreen = Camera:WorldToViewportPoint(targetPart.Position)
+                        if onScreen then
+                            local dist = (Vector2.new(screenPos.X, screenPos.Y) - viewportCenter).Magnitude
+                            if dist < bestDist then
+                                closestPlayer = player
+                                bestDist = dist
+                            end
+                        end
+                    end
+                end
+            end
+            if closestPlayer then
+                local targetPart = closestPlayer.Character:FindFirstChild(getgenv().SilentAimConfig.HitPart)
+                if targetPart then
+                    -- Ändere die Blickrichtung kurzzeitig, um den Schuss zu treffen
+                    local originalCF = Camera.CFrame
+                    Camera.CFrame = CFrame.new(Camera.CFrame.Position, targetPart.Position)
+                    -- Nach einem Frame zurücksetzen (damit der Schuss registriert wird)
+                    task.wait(0.01)
+                    Camera.CFrame = originalCF
+                end
+            end
+        end
+    end
+
+    -- Verbinde Events
+    UserInputService.InputBegan:Connect(onInputBegan)
+    -- Bei Fenstergrößenänderung FOV Circle anpassen
+    RunService.RenderStepped:Connect(function()
+        if fovCircle then
+            fovCircle.Position = Camera.ViewportSize / 2
+        end
+    end)
+
+    -- Initiale Erstellung
+    updateFOVCircle()
+    -- Speichere Funktion zum Aktualisieren
+    getgenv().UpdateSilentAimUI = onConfigChanged
+end
+
+pcall(setupSilentAim)
+
+-- ============================================
+-- ESP LOGIK (Boxen, Nametags, Chams)
+-- ============================================
+local function setupESP()
+    local Players = game:GetService("Players")
+    local Workspace = game:GetService("Workspace")
+    local LocalPlayer = Players.LocalPlayer
+    local Camera = Workspace.CurrentCamera
+    local RunService = game:GetService("RunService")
+
+    local espObjects = {}
+    local highlightObjects = {}
+
+    -- Funktion zum Erstellen der ESP-Anzeigen für einen Spieler
+    local function createESPForPlayer(player)
+        if espObjects[player] then return end
+        local obj = {}
+        -- Box
+        local box = Drawing.new("Square")
+        box.Thickness = 1
+        box.Color = Color3.fromRGB(0, 170, 255)
+        box.Filled = false
+        box.Visible = false
+        -- Name
+        local nameText = Drawing.new("Text")
+        nameText.Color = Color3.new(1,1,1)
+        nameText.Size = 14
+        nameText.Center = true
+        nameText.Visible = false
+        obj.Box = box
+        obj.Name = nameText
+        espObjects[player] = obj
+
+        -- Chams (Highlight)
+        if getgenv().ESPConfig.Chams then
+            local highlight = Instance.new("Highlight")
+            highlight.FillColor = getgenv().ESPConfig.ChamsColor
+            highlight.FillTransparency = 0.5
+            highlight.OutlineColor = Color3.new(1,1,1)
+            highlight.OutlineTransparency = 0.3
+            highlight.Parent = player.Character or player
+            highlightObjects[player] = highlight
+        end
+    end
+
+    -- Funktion zum Entfernen von ESP für einen Spieler
+    local function removeESPForPlayer(player)
+        local obj = espObjects[player]
+        if obj then
+            obj.Box:Remove()
+            obj.Name:Remove()
+            espObjects[player] = nil
+        end
+        local highlight = highlightObjects[player]
+        if highlight then
+            highlight:Destroy()
+            highlightObjects[player] = nil
+        end
+    end
+
+    -- Aktualisiere alle ESP-Objekte
+    local function updateESP()
+        if not getgenv().ESPConfig.Enabled then
+            -- Alle ausblenden
+            for _, obj in pairs(espObjects) do
+                obj.Box.Visible = false
+                obj.Name.Visible = false
+            end
+            return
+        end
+
+        for _, player in Players:GetPlayers() do
+            if player == LocalPlayer then continue end
+            if player.Character and player.Character:FindFirstChild("Humanoid") and player.Character.Humanoid.Health > 0 then
+                -- Sicherstellen, dass ESP-Objekte existieren
+                if not espObjects[player] then
+                    createESPForPlayer(player)
+                end
+                local obj = espObjects[player]
+                local character = player.Character
+                local root = character:FindFirstChild("HumanoidRootPart") or character:FindFirstChild("Torso")
+                if root then
+                    local screenPos, onScreen = Camera:WorldToViewportPoint(root.Position)
+                    if onScreen then
+                        local size = character:GetExtentsSize()
+                        local height = size.Y
+                        local width = size.X
+                        local top = screenPos.Y - height / 2
+                        local left = screenPos.X - width / 2
+                        -- Box
+                        if getgenv().ESPConfig.Boxes then
+                            obj.Box.Visible = true
+                            obj.Box.Position = Vector2.new(left, top)
+                            obj.Box.Size = Vector2.new(width, height)
+                        else
+                            obj.Box.Visible = false
+                        end
+                        -- Name
+                        if getgenv().ESPConfig.NameTags then
+                            obj.Name.Visible = true
+                            obj.Name.Text = player.Name
+                            obj.Name.Position = Vector2.new(screenPos.X, top - 15)
+                        else
+                            obj.Name.Visible = false
+                        end
+                    else
+                        obj.Box.Visible = false
+                        obj.Name.Visible = false
+                    end
+                end
+            else
+                -- Spieler tot oder kein Charakter -> ESP ausblenden
+                if espObjects[player] then
+                    espObjects[player].Box.Visible = false
+                    espObjects[player].Name.Visible = false
+                end
+            end
+        end
+    end
+
+    -- Aktualisiere Chams (wenn aktiviert)
+    local function updateChams()
+        for _, player in Players:GetPlayers() do
+            if player == LocalPlayer then continue end
+            if getgenv().ESPConfig.Chams then
+                if not highlightObjects[player] then
+                    if player.Character then
+                        local highlight = Instance.new("Highlight")
+                        highlight.FillColor = getgenv().ESPConfig.ChamsColor
+                        highlight.FillTransparency = 0.5
+                        highlight.OutlineColor = Color3.new(1,1,1)
+                        highlight.OutlineTransparency = 0.3
+                        highlight.Parent = player.Character
+                        highlightObjects[player] = highlight
+                    end
+                else
+                    highlightObjects[player].FillColor = getgenv().ESPConfig.ChamsColor
+                end
+            else
+                if highlightObjects[player] then
+                    highlightObjects[player]:Destroy()
+                    highlightObjects[player] = nil
+                end
+            end
+        end
+    end
+
+    -- Event: Spieler treten bei / verlassen
+    Players.PlayerAdded:Connect(function(player)
+        player.CharacterAdded:Connect(function(character)
+            task.wait(0.5) -- warte auf Modell
+            if getgenv().ESPConfig.Enabled and getgenv().ESPConfig.Chams then
+                local highlight = Instance.new("Highlight")
+                highlight.FillColor = getgenv().ESPConfig.ChamsColor
+                highlight.FillTransparency = 0.5
+                highlight.OutlineColor = Color3.new(1,1,1)
+                highlight.OutlineTransparency = 0.3
+                highlight.Parent = character
+                highlightObjects[player] = highlight
+            end
+        end)
+    end)
+
+    Players.PlayerRemoving:Connect(function(player)
+        removeESPForPlayer(player)
+    end)
+
+    -- Render-Schleife
+    RunService.RenderStepped:Connect(updateESP)
+
+    -- Funktion zum Neuladen der ESP-Konfiguration (wird von UI aufgerufen)
+    getgenv().ReloadESP = function()
+        updateChams()
+        -- Alle ESP-Objekte neu erstellen (falls nötig)
+        for _, player in Players:GetPlayers() do
+            if player ~= LocalPlayer then
+                if espObjects[player] then
+                    removeESPForPlayer(player)
+                end
+                if getgenv().ESPConfig.Enabled then
+                    createESPForPlayer(player)
+                end
+            end
+        end
+    end
+end
+
+pcall(setupESP)
+
+-- ============================================
+-- FUNKTIONEN FÜR SKY UND BACKGROUND (Fortsetzung)
+-- ============================================
+local function setBackground(visible, transparency, imageId)
+    if not backgroundImage then
+        local mainFrame = Window.Frame or Window.Main or (Window:GetMainFrame and Window:GetMainFrame())
+        if mainFrame then
+            backgroundImage = Instance.new("ImageLabel")
+            backgroundImage.Name = "BackgroundImage"
+            backgroundImage.Size = UDim2.new(1, 0, 1, 0)
+            backgroundImage.Position = UDim2.new(0, 0, 0, 0)
+            backgroundImage.BackgroundTransparency = 1
+            backgroundImage.Image = imageId or "rbxassetid://134891041950620"
+            backgroundImage.ZIndex = 0
+            backgroundImage.Parent = mainFrame
+        else
+            warn("Could not find main frame for background image")
+            return
+        end
+    end
+
+    if backgroundImage then
+        backgroundImage.Visible = visible
+        backgroundImage.ImageTransparency = 1 - transparency
+        if imageId then
+            backgroundImage.Image = imageId
+        end
+    end
+end
+
+-- ============================================
+-- WINDUI FENSTER ERSTELLEN
+-- ============================================
+local Window = WindUI:CreateWindow({
+    Title = "Cyber Knife | Premium",
+    Theme = "Cyber Red Blue",
+    Size = UDim2.new(0, 650, 0, 450),
+    Position = UDim2.new(0.5, -325, 0.5, -225),
+    Draggable = true,
+    Resizable = false,
+})
+
+-- Hintergrund initial setzen
+setBackground(true, 0.5, "rbxassetid://134891041950620")
+ApplySky("Default")
+
+-- ============================================
+-- TABS ERSTELLEN
+-- ============================================
+
+-- 1. Home
+local HomeTab = Window:CreateTab({ Title = "Home", Icon = "house" })
+local StatusSection = HomeTab:CreateSection({ Title = "Status" })
+StatusSection:AddLabel({ Text = "Knife Script: " .. (getgenv().KnifeConfig.Enabled and "Enabled" or "Disabled") })
+StatusSection:AddLabel({ Text = "Silent Aim: " .. (getgenv().SilentAimConfig.Enabled and "Enabled" or "Disabled") })
+StatusSection:AddLabel({ Text = "ESP: " .. (getgenv().ESPConfig.Enabled and "Enabled" or "Disabled") })
+local InfoSection = HomeTab:CreateSection({ Title = "Information" })
+InfoSection:AddLabel({ Text = "Cyber Knife v2.0 (Silent Aim + ESP)" })
+InfoSection:AddLabel({ Text = "Premium UI by WindUI" })
+local NotifSection = HomeTab:CreateSection({ Title = "Notifications" })
+NotifSection:AddButton({ Text = "Show Test Notification", Callback = function()
+    Window:Notify({ Title = "Test", Description = "This is a test notification!", Duration = 3 })
+end })
+
+-- 2. Knife
+local KnifeTab = Window:CreateTab({ Title = "Knife", Icon = "crosshairs" })
+local KnifeSection = KnifeTab:CreateSection({ Title = "Knife Configuration" })
+KnifeSection:AddToggle({
+    Text = "Enabled",
+    Default = getgenv().KnifeConfig.Enabled,
+    Callback = function(value) getgenv().KnifeConfig.Enabled = value end
+})
+KnifeSection:AddDropdown({
+    Text = "Hit Part",
+    Items = {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso"},
+    Default = getgenv().KnifeConfig.HitPart,
+    Callback = function(value) getgenv().KnifeConfig.HitPart = value end
+})
+KnifeSection:AddSlider({
+    Text = "FOV",
+    Min = 50,
+    Max = 1000,
+    Default = getgenv().KnifeConfig.FOV,
+    Callback = function(value) getgenv().KnifeConfig.FOV = value end
+})
+KnifeSection:AddButton({
+    Text = "Reapply Knife Script",
+    Callback = function()
+        pcall(setupKnifeScript)
+        Window:Notify({ Title = "Knife Script", Description = "Reapplied successfully.", Duration = 3 })
+    end
+})
+
+-- 3. Aim (Silent Aim)
+local AimTab = Window:CreateTab({ Title = "Aim", Icon = "bullseye" })
+local AimSection = AimTab:CreateSection({ Title = "Silent Aim (Schusswaffen)" })
+AimSection:AddToggle({
+    Text = "Enabled",
+    Default = getgenv().SilentAimConfig.Enabled,
+    Callback = function(value)
+        getgenv().SilentAimConfig.Enabled = value
+        if getgenv().UpdateSilentAimUI then getgenv().UpdateSilentAimUI() end
+    end
+})
+AimSection:AddDropdown({
+    Text = "Hit Part",
+    Items = {"Head", "HumanoidRootPart", "Torso", "UpperTorso", "LowerTorso"},
+    Default = getgenv().SilentAimConfig.HitPart,
+    Callback = function(value)
+        getgenv().SilentAimConfig.HitPart = value
+    end
+})
+AimSection:AddSlider({
+    Text = "FOV Radius",
+    Min = 10,
+    Max = 500,
+    Default = getgenv().SilentAimConfig.FOV,
+    Callback = function(value)
+        getgenv().SilentAimConfig.FOV = value
+        if getgenv().UpdateSilentAimUI then getgenv().UpdateSilentAimUI() end
+    end
+})
+AimSection:AddToggle({
+    Text = "Show FOV Circle",
+    Default = getgenv().SilentAimConfig.ShowFOVCircle,
+    Callback = function(value)
+        getgenv().SilentAimConfig.ShowFOVCircle = value
+        if getgenv().UpdateSilentAimUI then getgenv().UpdateSilentAimUI() end
+    end
+})
+
+-- 4. ESP
+local ESPTab = Window:CreateTab({ Title = "ESP", Icon = "eye" })
+local ESPSection = ESPTab:CreateSection({ Title = "ESP Settings" })
+ESPSection:AddToggle({
+    Text = "Enable ESP",
+    Default = getgenv().ESPConfig.Enabled,
+    Callback = function(value)
+        getgenv().ESPConfig.Enabled = value
+        getgenv().ReloadESP()
+    end
+})
+ESPSection:AddToggle({
+    Text = "Boxes",
+    Default = getgenv().ESPConfig.Boxes,
+    Callback = function(value)
+        getgenv().ESPConfig.Boxes = value
+    end
+})
+ESPSection:AddToggle({
+    Text = "Name Tags",
+    Default = getgenv().ESPConfig.NameTags,
+    Callback = function(value)
+        getgenv().ESPConfig.NameTags = value
+    end
+})
+ESPSection:AddToggle({
+    Text = "Chams (Glow)",
+    Default = getgenv().ESPConfig.Chams,
+    Callback = function(value)
+        getgenv().ESPConfig.Chams = value
+        getgenv().ReloadESP()
+    end
+})
+ESPSection:AddColorPicker({
+    Text = "Chams Color",
+    Default = getgenv().ESPConfig.ChamsColor,
+    Callback = function(color)
+        getgenv().ESPConfig.ChamsColor = color
+        getgenv().ReloadESP()
+    end
+})
+
+-- 5. Visuals (Sky & Background)
+local VisualsTab = Window:CreateTab({ Title = "Visuals", Icon = "palette" })
+local SkySection = VisualsTab:CreateSection({ Title = "Sky System" })
+SkySection:AddDropdown({
+    Text = "Select Sky",
+    Items = {"Default","Aurora","Moonlight","Orange","Pink","Universe","Aesthetic","Space"},
+    Default = "Default",
+    Callback = function(value) ApplySky(value) end
+})
+local BgSection = VisualsTab:CreateSection({ Title = "Background System" })
+local bgToggle = BgSection:AddToggle({
+    Text = "Enable Background Image",
+    Default = true,
+    Callback = function(value)
+        setBackground(value, bgSlider.Value or 0.5, "rbxassetid://134891041950620")
+    end
+})
+local bgSlider = BgSection:AddSlider({
+    Text = "Transparency",
+    Min = 0, Max = 1, Default = 0.5,
+    Callback = function(value)
+        if bgToggle.Value then
+            setBackground(true, value, "rbxassetid://134891041950620")
+        end
+    end
+})
+BgSection:AddInput({
+    Text = "Image ID",
+    Placeholder = "Enter asset ID",
+    Default = "134891041950620",
+    Callback = function(value)
+        if bgToggle.Value then
+            setBackground(true, bgSlider.Value, "rbxassetid://" .. value)
+        end
+    end
+})
+
+-- 6. Settings (Themes etc.)
+local SettingsTab = Window:CreateTab({ Title = "Settings", Icon = "gear" })
+local ThemeSection = SettingsTab:CreateSection({ Title = "Theme System" })
+ThemeSection:AddDropdown({
+    Text = "Select Theme",
+    Items = {"Dark","Light","Rose","Plant","Indigo","Sky","Violet","Amber","Cyber Red Blue"},
+    Default = "Cyber Red Blue",
+    Callback = function(value)
+        if value == "Cyber Red Blue" then
+            if Window.SetTheme then Window:SetTheme(CyberRedBlueTheme) end
+        else
+            if Window.SetTheme then Window:SetTheme(value) end
+        end
+        Window:Notify({ Title = "Theme System", Description = "Theme changed to " .. value, Duration = 3 })
+    end
+})
+local UISettingsSection = SettingsTab:CreateSection({ Title = "UI Settings" })
+UISettingsSection:AddButton({
+    Text = "Reset UI Position",
+    Callback = function()
+        if Window.ResetPosition then Window:ResetPosition() end
+    end
+})
+
+-- ============================================
+-- FINALE NOTIFICATION
+-- ============================================
+Window:Notify({
+    Title = "Welcome",
+    Description = "Cyber Knife UI with Silent Aim & ESP loaded!",
+    Duration = 4,
+})
+
+-- ============================================
+-- SCRIPT ENDE
+-- ============================================
